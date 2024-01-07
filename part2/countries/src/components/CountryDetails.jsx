@@ -7,7 +7,7 @@ const CountryDetails = ({ country }) => {
     useEffect(() => {
         if (weather) return;
         weatherService
-            .getWeatherFor({
+            .getWeather({
                 latitude: country.location.latitude,
                 longitude: country.location.longitude,
             })
