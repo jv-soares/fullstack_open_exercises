@@ -6,9 +6,7 @@ import PersonList from './components/PersonList.jsx';
 import personService from './services/persons.js';
 
 const App = () => {
-    const [persons, setPersons] = useState([
-        { name: 'Arto Hellas', number: '9812913' },
-    ]);
+    const [persons, setPersons] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [newName, setNewName] = useState('');
     const [newNumber, setNewNumber] = useState('');
