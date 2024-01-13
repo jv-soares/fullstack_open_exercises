@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const app = express();
 const port = 3001;
 
+app.use(express.static('dist'));
 app.use(express.json());
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(
