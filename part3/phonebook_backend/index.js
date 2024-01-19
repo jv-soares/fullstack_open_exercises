@@ -1,5 +1,7 @@
+require('dotenv').config();
 const express = require('express');
 const morgan = require('morgan');
+const Person = require('./person');
 
 const app = express();
 const port = 3001;
@@ -20,14 +22,12 @@ app.get('/info', (req, res) => {
 });
 
 app.get('/api/persons', (req, res) => {
-    res.json(entries);
+    Person.find({}).then((result) => res.json(result));
 });
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const entry = entries.find((e) => e.id === id);
-    if (!entry) return res.status(404).send('Person not found');
-    res.json(entry);
+    const id = req.params.id;
+    Person.findById(id).then((result) => res.json(result));
 });
 
 app.post('/api/persons', (req, res) => {
@@ -35,12 +35,12 @@ app.post('/api/persons', (req, res) => {
     if (!person.name || !person.number) {
         return res.status(400).json({ error: 'Content missing' });
     }
-    if (entries.map((e) => e.name).includes(person.name)) {
-        return res.status(400).json({ error: 'Name must be unique' });
-    }
-    person.id = Math.floor(Math.random() * 10000);
-    entries = entries.concat(person);
-    res.status(201).json(person);
+    // if (entries.map((e) => e.name).includes(person.name)) {
+    //     return res.status(400).json({ error: 'Name must be unique' });
+    // }
+    Person({ ...person })
+        .save()
+        .then((result) => res.status(201).json(result));
 });
 
 app.delete('/api/persons/:id', (req, res) => {
@@ -52,26 +52,3 @@ app.delete('/api/persons/:id', (req, res) => {
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);
 });
-
-let entries = [
-    {
-        id: 1,
-        name: 'Arto Hellas',
-        number: '040-123456',
-    },
-    {
-        id: 2,
-        name: 'Ada Lovelace',
-        number: '39-44-5323523',
-    },
-    {
-        id: 3,
-        name: 'Dan Abramov',
-        number: '12-43-234345',
-    },
-    {
-        id: 4,
-        name: 'Mary Poppendieck',
-        number: '39-23-6423122',
-    },
-];
