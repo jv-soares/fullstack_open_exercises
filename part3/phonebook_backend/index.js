@@ -8,7 +8,7 @@ const port = 3001;
 
 app.use(express.static('dist'));
 app.use(express.json());
-morgan.token('body', (req, res) => JSON.stringify(req.body));
+morgan.token('body', (req) => JSON.stringify(req.body));
 app.use(
     morgan(
         ':method :url :status :res[content-length] - :response-time ms :body'
@@ -31,19 +31,22 @@ app.get('/api/persons', (req, res) => {
 });
 
 app.get('/api/persons/:id', (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
     Person.findById(id)
         .then((result) => (result ? res.json(result) : res.status(404).end()))
         .catch(next);
 });
 
 app.put('/api/persons/:id', (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const person = req.body;
     if (!person.name || !person.number) {
         return res.status(400).json({ error: 'Content missing' });
     }
-    Person.findByIdAndUpdate(id, person, { new: true, runValidators: true })
+    return Person.findByIdAndUpdate(id, person, {
+        new: true,
+        runValidators: true,
+    })
         .then((result) => res.status(201).json(result))
         .catch(next);
 });
@@ -53,16 +56,16 @@ app.post('/api/persons', (req, res, next) => {
     if (!person.name || !person.number) {
         return res.status(400).json({ error: 'Content missing' });
     }
-    Person({ ...person })
+    return Person({ ...person })
         .save()
         .then((result) => res.status(201).json(result))
         .catch(next);
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
-    const id = req.params.id;
+    const { id } = req.params;
     Person.findByIdAndDelete(id)
-        .then((result) => res.status(204).end())
+        .then(() => res.status(204).end())
         .catch(next);
 });
 
@@ -77,7 +80,7 @@ const errorHandler = (error, req, res, next) => {
 };
 app.use(errorHandler);
 
-const unknownEndpointHandler = (error, req, res, next) => {
+const unknownEndpointHandler = (error, req, res) => {
     res.status(404).json({ error: 'Unknown endpoint' });
 };
 app.use(unknownEndpointHandler);
