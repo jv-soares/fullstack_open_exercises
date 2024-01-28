@@ -48,11 +48,16 @@ const App = () => {
                 clearTextFields();
                 showNotification(`Changed ${updatedPerson.name}'s number`);
             })
-            .catch((_) => {
-                showNotification(
-                    `Information of ${existingPerson.name} has already been removed from server`,
-                    true
-                );
+            .catch((error) => {
+                if (error.response) {
+                    showNotification(error.response.data.error, true);
+                } else {
+                    console.log(error);
+                    showNotification(
+                        `Information of ${existingPerson.name} has already been removed from server`,
+                        true
+                    );
+                }
             });
     };
 
