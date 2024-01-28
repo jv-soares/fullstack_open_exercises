@@ -15,39 +15,72 @@ app.use(
     )
 );
 
-app.get('/info', (req, res) => {
-    const length = entries.length;
+app.get('/info', (req, res, next) => {
     const now = Date();
-    res.send(`Phonebook has info for ${length} people<br/>${now}`);
+    Person.find({})
+        .then((result) =>
+            res.send(
+                `Phonebook has info for ${result.length} people<br/>${now}`
+            )
+        )
+        .catch(next);
 });
 
 app.get('/api/persons', (req, res) => {
     Person.find({}).then((result) => res.json(result));
 });
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
     const id = req.params.id;
-    Person.findById(id).then((result) => res.json(result));
+    Person.findById(id)
+        .then((result) => (result ? res.json(result) : res.status(404).end()))
+        .catch(next);
 });
 
-app.post('/api/persons', (req, res) => {
+app.put('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id;
     const person = req.body;
     if (!person.name || !person.number) {
         return res.status(400).json({ error: 'Content missing' });
     }
-    // if (entries.map((e) => e.name).includes(person.name)) {
-    //     return res.status(400).json({ error: 'Name must be unique' });
-    // }
-    Person({ ...person })
-        .save()
-        .then((result) => res.status(201).json(result));
+    Person.findByIdAndUpdate(id, person, { new: true, runValidators: true })
+        .then((result) => res.status(201).json(result))
+        .catch(next);
 });
 
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    entries = entries.filter((e) => e.id !== id);
-    res.send('Removed');
+app.post('/api/persons', (req, res, next) => {
+    const person = req.body;
+    if (!person.name || !person.number) {
+        return res.status(400).json({ error: 'Content missing' });
+    }
+    Person({ ...person })
+        .save()
+        .then((result) => res.status(201).json(result))
+        .catch(next);
 });
+
+app.delete('/api/persons/:id', (req, res, next) => {
+    const id = req.params.id;
+    Person.findByIdAndDelete(id)
+        .then((result) => res.status(204).end())
+        .catch(next);
+});
+
+const errorHandler = (error, req, res, next) => {
+    console.error(error);
+    if (error.name === 'CastError') {
+        res.status(400).json({ error: 'Malformatted id' });
+    } else if (error.name === 'ValidationError') {
+        res.status(400).json({ error: error.message });
+    }
+    next(error);
+};
+app.use(errorHandler);
+
+const unknownEndpointHandler = (error, req, res, next) => {
+    res.status(404).json({ error: 'Unknown endpoint' });
+};
+app.use(unknownEndpointHandler);
 
 app.listen(port, () => {
     console.log(`App listening on port ${port}`);

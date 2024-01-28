@@ -58,18 +58,23 @@ const App = () => {
 
     const addPerson = () => {
         const newPerson = { name: newName, number: newNumber };
-        personService.create(newPerson).then((person) => {
-            setPersons(persons.concat(person));
-            clearTextFields();
-            showNotification(`Added ${newPerson.name}`);
-        });
+        personService
+            .create(newPerson)
+            .then((person) => {
+                setPersons(persons.concat(person));
+                clearTextFields();
+                showNotification(`Added ${newPerson.name}`);
+            })
+            .catch((error) =>
+                showNotification(error.response.data.error, true)
+            );
     };
 
     const deletePerson = (person) => {
         const shouldDelete = window.confirm(`Delete ${person.name}?`);
         if (shouldDelete)
             personService.remove(person.id).then((response) => {
-                if (response.status === 200) {
+                if (response.status === 204) {
                     const updatedPersons = persons.filter(
                         (e) => e.id !== person.id
                     );
@@ -80,7 +85,7 @@ const App = () => {
 
     const showNotification = (message, isError = false) => {
         setNotification({ message, isError });
-        setTimeout(() => setNotification(null), 2500);
+        setTimeout(() => setNotification(null), 3000);
     };
 
     const clearTextFields = () => {
