@@ -62,7 +62,7 @@ test('blog likes default to 0', async () => {
   expect(response.body.likes).toBe(0);
 });
 
-describe('bad request', () => {
+describe('invalid request', () => {
   test('if blog has no title', async () => {
     const newBlog = {
       author: 'joao soares',
@@ -84,8 +84,8 @@ describe('bad request', () => {
 
 describe('deletion of a blog post', () => {
   test('succeeds with status code 204 if id is valid', async () => {
-    const initialBlogs = await helper.blogsInDb();
-    const blogToDelete = initialBlogs[0];
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToDelete = blogsAtStart[0];
 
     await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
 
@@ -95,9 +95,33 @@ describe('deletion of a blog post', () => {
     expect(blogsAtEnd).not.toContainEqual(blogToDelete);
   });
 
-  test.only('fails with status code 400 if id is invalid', async () => {
+  test('fails with status code 400 if id is invalid', async () => {
     const invalidId = '123';
     await api.delete(`/api/blogs/${invalidId}`).expect(400);
+  });
+});
+
+describe('update of a blog post', () => {
+  test('succeeds with status code 201 if id is valid', async () => {
+    const blogsAtStart = await helper.blogsInDb();
+    const blogToUpdate = blogsAtStart[0];
+    const updatedBlog = { ...blogToUpdate, likes: blogToUpdate.likes + 1 };
+
+    const response = await api
+      .put(`/api/blogs/${blogToUpdate.id}`)
+      .send(updatedBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    expect(response.body).toEqual(updatedBlog);
+
+    const blogsAtEnd = await helper.blogsInDb();
+    expect(blogsAtEnd).toContainEqual(updatedBlog);
+  });
+
+  test('fails with status code 400 if id is invalid', async () => {
+    const invalidId = '123';
+    await api.put(`/api/blogs/${invalidId}`).expect(400);
   });
 });
 
