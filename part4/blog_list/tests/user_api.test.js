@@ -40,7 +40,9 @@ describe('POST /api/users', () => {
       password: 'joao123',
     };
 
-    await api.post('/api/users').send(user).expect(400);
+    const response = await api.post('/api/users').send(user).expect(400);
+
+    expect(response.body.error).toContain('`username` is required');
   });
 
   test('should fail when request doesnt contain password', async () => {
@@ -49,7 +51,9 @@ describe('POST /api/users', () => {
       name: 'joao soares',
     };
 
-    await api.post('/api/users').send(user).expect(400);
+    const response = await api.post('/api/users').send(user).expect(400);
+
+    expect(response.body.error).toContain('password is required');
   });
 
   test('should fail when username already exists', async () => {
@@ -59,7 +63,27 @@ describe('POST /api/users', () => {
       password: 'joao123',
     };
 
-    await api.post('/api/users').send(user).expect(400);
+    const response = await api.post('/api/users').send(user).expect(400);
+
+    expect(response.body.error).toContain('expected `username` to be unique');
+  });
+
+  test('should fail when username is less than 3 char long', async () => {
+    const user = { username: 'do', name: 'joao soares', password: 'joao123' };
+
+    const response = await api.post('/api/users').send(user).expect(400);
+
+    expect(response.body.error).toContain('username');
+    expect(response.body.error).toContain('length');
+  });
+
+  test('should fail when password is less than 3 char long', async () => {
+    const user = { username: 'docputs', name: 'joao soares', password: 'jo' };
+
+    const response = await api.post('/api/users').send(user).expect(400);
+
+    expect(response.body.error).toContain('password');
+    expect(response.body.error).toContain('at least 3 characters');
   });
 });
 
