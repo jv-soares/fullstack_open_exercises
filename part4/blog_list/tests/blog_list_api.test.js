@@ -26,30 +26,6 @@ test('blog has id', async () => {
   expect(response.body[0].id).toBeDefined();
 });
 
-test('post new blog', async () => {
-  const newBlog = {
-    title: 'Minimal Collective',
-    author: 'joao soares',
-    url: 'https://www.minimalcollective.digital/',
-  };
-
-  await api
-    .post('/api/blogs')
-    .send(newBlog)
-    .expect(201)
-    .expect('Content-Type', /application\/json/);
-
-  const savedBlogs = await helper.blogsInDb();
-  expect(savedBlogs).toHaveLength(helper.initialBlogs.length + 1);
-
-  const savedBlogsWithoutId = savedBlogs.map(({ title, author, url }) => ({
-    title,
-    author,
-    url,
-  }));
-  expect(savedBlogsWithoutId).toContainEqual(newBlog);
-});
-
 test('blog likes default to 0', async () => {
   const newBlog = {
     title: 'test',
@@ -79,6 +55,44 @@ describe('invalid request', () => {
     };
 
     await api.post('/api/blogs').send(newBlog).expect(400);
+  });
+});
+
+// describe('retrieving a blog post', () => {
+//   test('contains users', async () => {
+//     const response = await api
+//       .get('/api/blogs')
+//       .expect(200)
+//       .expect('Content-Type', /application\/json/);
+
+//     console.log(response.body);
+//   });
+// });
+
+describe('creation of a blog post', () => {
+  test('succeeds when request is correct', async () => {
+    const newBlog = {
+      title: 'Minimal Collective',
+      author: 'joao soares',
+      url: 'https://www.minimalcollective.digital/',
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/);
+
+    const savedBlogs = await helper.blogsInDb();
+    expect(savedBlogs).toHaveLength(helper.initialBlogs.length + 1);
+
+    const savedBlogsWithoutId = savedBlogs.map(({ title, author, url }) => ({
+      title,
+      author,
+      url,
+    }));
+    expect(savedBlogsWithoutId).toContainEqual(newBlog);
+    expect(response.body.user).toBeDefined();
   });
 });
 
