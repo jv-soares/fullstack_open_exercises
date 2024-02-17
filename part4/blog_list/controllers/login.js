@@ -4,8 +4,8 @@ const jwt = require('jsonwebtoken');
 
 const User = require('../models/user');
 
-loginRouter.post('/', async (req, res) => {
-  const { username, password } = req.body;
+loginRouter.post('/', async (request, response) => {
+  const { username, password } = request.body;
   const user = await User.findOne({ username });
   const isPasswordValid = user
     ? await bcrypt.compare(password, user.passwordHash)
@@ -15,9 +15,9 @@ loginRouter.post('/', async (req, res) => {
       { id: user.id, username: user.username },
       process.env.JWT_SECRET
     );
-    res.send({ token, username: user.username, name: user.name });
+    response.send({ token, username: user.username, name: user.name });
   } else {
-    res.status(401).send({ error: 'invalid username or password' });
+    response.status(401).send({ error: 'invalid username or password' });
   }
 });
 

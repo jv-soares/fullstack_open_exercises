@@ -10,4 +10,13 @@ const errorHandler = (error, request, response, next) => {
   next(error);
 };
 
-module.exports = { errorHandler };
+const tokenExtractor = (request, response, next) => {
+  const authHeader = request.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    request.token = token;
+  }
+  next();
+};
+
+module.exports = { errorHandler, tokenExtractor };
