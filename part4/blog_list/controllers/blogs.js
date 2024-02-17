@@ -1,47 +1,56 @@
 const blogsRouter = require('express').Router();
+const jwt = require('jsonwebtoken');
 
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
-blogsRouter.get('/', async (request, response) => {
+blogsRouter.get('/', async (req, res) => {
   const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 });
-  response.json(blogs);
+  res.json(blogs);
 });
 
-blogsRouter.post('/', async (request, response, next) => {
+async function getUser(request) {
+  const authHeader = request.get('authorization');
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const token = authHeader.split(' ')[1];
+    const { id } = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findById(id);
+    return user;
+  }
+}
+
+blogsRouter.post('/', async (req, res, next) => {
   try {
-    const anyUser = await User.findOne();
-    if (!anyUser) {
-      return res.status(500).end();
-    }
-    const blog = { ...request.body, user: anyUser.id };
+    const user = await getUser(req);
+    if (!user) return res.status(401).end();
+    const blog = { ...req.body, user: user.id };
     const savedBlog = await Blog(blog).save();
-    anyUser.blogs = anyUser.blogs.concat(savedBlog.id);
-    await anyUser.save();
-    response.status(201).json(savedBlog);
+    user.blogs = user.blogs.concat(savedBlog.id);
+    await user.save();
+    res.status(201).json(savedBlog);
   } catch (error) {
     next(error);
   }
 });
 
-blogsRouter.delete('/:id', async (request, response, next) => {
+blogsRouter.delete('/:id', async (req, res, next) => {
   try {
-    const id = request.params.id;
+    const id = req.params.id;
     await Blog.findByIdAndDelete(id);
-    response.status(204).end();
+    res.status(204).end();
   } catch (error) {
     next(error);
   }
 });
 
-blogsRouter.put('/:id', async (request, response, next) => {
+blogsRouter.put('/:id', async (req, res, next) => {
   try {
-    const id = request.params.id;
-    const result = await Blog.findByIdAndUpdate(id, request.body, {
+    const id = req.params.id;
+    const result = await Blog.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
-    response.status(201).json(result);
+    res.status(201).json(result);
   } catch (error) {
     next(error);
   }
