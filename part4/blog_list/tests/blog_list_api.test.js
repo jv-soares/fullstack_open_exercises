@@ -5,10 +5,14 @@ const mongoose = require('mongoose');
 const helper = require('./test_helper');
 
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.initialBlogs);
+
+  await User.deleteMany({});
+  await User(helper.testUser).save();
 });
 
 describe('GET /api/blogs', () => {
@@ -29,19 +33,18 @@ describe('GET /api/blogs', () => {
 });
 
 describe('POST /api/blogs', () => {
-  test('blog likes default to 0', async () => {
+  test('fails if no auth token is sent', async () => {
     const newBlog = {
-      title: 'test',
+      title: 'Minimal Collective',
       author: 'joao soares',
-      url: 'https://test.com',
+      url: 'https://www.minimalcollective.digital/',
     };
 
-    const response = await api.post('/api/blogs').send(newBlog);
-
-    expect(response.body.likes).toBe(0);
+    await api.post('/api/blogs').send(newBlog).expect(401);
   });
 
-  test('succeeds when request is correct', async () => {
+  test('succeeds when request is correct and token is sent', async () => {
+    const token = await helper.getAuthToken();
     const newBlog = {
       title: 'Minimal Collective',
       author: 'joao soares',
@@ -50,7 +53,7 @@ describe('POST /api/blogs', () => {
 
     const response = await api
       .post('/api/blogs')
-      .auth('token', { type: 'bearer' })
+      .auth(token, { type: 'bearer' })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -67,22 +70,48 @@ describe('POST /api/blogs', () => {
     expect(response.body.user).toBeDefined();
   });
 
+  test('blog likes default to 0', async () => {
+    const token = await helper.getAuthToken();
+    const newBlog = {
+      title: 'test',
+      author: 'joao soares',
+      url: 'https://test.com',
+    };
+
+    const response = await api
+      .post('/api/blogs')
+      .auth(token, { type: 'bearer' })
+      .send(newBlog);
+
+    expect(response.body.likes).toBe(0);
+  });
+
   test('fails if blog has no title', async () => {
+    const token = await helper.getAuthToken();
     const newBlog = {
       author: 'joao soares',
       url: 'https://test.com',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .auth(token, { type: 'bearer' })
+      .send(newBlog)
+      .expect(400);
   });
 
   test('fails if blog has no url', async () => {
+    const token = await helper.getAuthToken();
     const newBlog = {
       author: 'joao soares',
       title: 'test',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    await api
+      .post('/api/blogs')
+      .auth(token, { type: 'bearer' })
+      .send(newBlog)
+      .expect(400);
   });
 });
 
