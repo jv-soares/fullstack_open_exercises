@@ -11,65 +11,36 @@ beforeEach(async () => {
   await Blog.insertMany(helper.initialBlogs);
 });
 
-test('blog list has correct length', async () => {
-  const response = await api
-    .get('/api/blogs')
-    .expect(200)
-    .expect('Content-Type', /application\/json/);
+describe('GET /api/blogs', () => {
+  test('blog list has correct length', async () => {
+    const response = await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/);
 
-  expect(response.body).toHaveLength(helper.initialBlogs.length);
+    expect(response.body).toHaveLength(helper.initialBlogs.length);
+  });
+
+  test('blog has id', async () => {
+    const response = await api.get('/api/blogs');
+
+    expect(response.body[0].id).toBeDefined();
+  });
 });
 
-test('blog has id', async () => {
-  const response = await api.get('/api/blogs');
-
-  expect(response.body[0].id).toBeDefined();
-});
-
-test('blog likes default to 0', async () => {
-  const newBlog = {
-    title: 'test',
-    author: 'joao soares',
-    url: 'https://test.com',
-  };
-
-  const response = await api.post('/api/blogs').send(newBlog);
-
-  expect(response.body.likes).toBe(0);
-});
-
-describe('invalid request', () => {
-  test('if blog has no title', async () => {
+describe('POST /api/blogs', () => {
+  test('blog likes default to 0', async () => {
     const newBlog = {
+      title: 'test',
       author: 'joao soares',
       url: 'https://test.com',
     };
 
-    await api.post('/api/blogs').send(newBlog).expect(400);
+    const response = await api.post('/api/blogs').send(newBlog);
+
+    expect(response.body.likes).toBe(0);
   });
 
-  test('if blog has no url', async () => {
-    const newBlog = {
-      author: 'joao soares',
-      title: 'test',
-    };
-
-    await api.post('/api/blogs').send(newBlog).expect(400);
-  });
-});
-
-// describe('retrieving a blog post', () => {
-//   test('contains users', async () => {
-//     const response = await api
-//       .get('/api/blogs')
-//       .expect(200)
-//       .expect('Content-Type', /application\/json/);
-
-//     console.log(response.body);
-//   });
-// });
-
-describe('creation of a blog post', () => {
   test('succeeds when request is correct', async () => {
     const newBlog = {
       title: 'Minimal Collective',
@@ -79,6 +50,7 @@ describe('creation of a blog post', () => {
 
     const response = await api
       .post('/api/blogs')
+      .auth('token', { type: 'bearer' })
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/);
@@ -94,9 +66,27 @@ describe('creation of a blog post', () => {
     expect(savedBlogsWithoutId).toContainEqual(newBlog);
     expect(response.body.user).toBeDefined();
   });
+
+  test('fails if blog has no title', async () => {
+    const newBlog = {
+      author: 'joao soares',
+      url: 'https://test.com',
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
+
+  test('fails if blog has no url', async () => {
+    const newBlog = {
+      author: 'joao soares',
+      title: 'test',
+    };
+
+    await api.post('/api/blogs').send(newBlog).expect(400);
+  });
 });
 
-describe('deletion of a blog post', () => {
+describe('DELETE /api/blogs', () => {
   test('succeeds with status code 204 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
@@ -115,7 +105,7 @@ describe('deletion of a blog post', () => {
   });
 });
 
-describe('update of a blog post', () => {
+describe('PUT /api/blogs', () => {
   test('succeeds with status code 201 if id is valid', async () => {
     const blogsAtStart = await helper.blogsInDb();
     const blogToUpdate = blogsAtStart[0];
