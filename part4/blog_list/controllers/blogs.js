@@ -31,12 +31,10 @@ blogsRouter.delete(
   middleware.userExtractor,
   async (request, response, next) => {
     try {
-      const userId = request.user.id;
-      if (!userId) return response.status(401).end();
       const blogId = request.params.id;
       const blog = await Blog.findById(blogId);
       if (!blog) return response.status(404).json({ error: 'blog not found' });
-      if (blog.user.toString() === userId) {
+      if (blog.user.toString() === request.user.id) {
         await blog.deleteOne();
         response.status(204).end();
       } else {
