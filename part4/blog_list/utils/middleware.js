@@ -30,6 +30,8 @@ const userExtractor = async (request, response, next) => {
       const user = await User.findById(id);
       request.user = user;
     }
+  } else {
+    response.status(401).end();
   }
   next();
 };

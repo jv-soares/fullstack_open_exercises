@@ -1,20 +1,25 @@
+const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
-const initialBlogs = [
-  {
-    title: 'Viage na Viagem',
-    author: 'joao soares',
-    url: 'https://www.viajenaviagem.com/',
-  },
-  {
-    title: 'Mit Vergnügen Köln',
-    author: 'joao soares',
-    url: 'https://koeln.mitvergnuegen.com/',
-  },
-];
+const createBlogsWithUserId = (userId) => {
+  return [
+    {
+      title: 'Viage na Viagem',
+      author: 'joao soares',
+      url: 'https://www.viajenaviagem.com/',
+      user: userId,
+    },
+    {
+      title: 'Mit Vergnügen Köln',
+      author: 'joao soares',
+      url: 'https://koeln.mitvergnuegen.com/',
+      user: userId,
+    },
+  ];
+};
 
 const testUser = {
   username: 'test',
@@ -45,7 +50,7 @@ const getAuthToken = async () => {
 };
 
 module.exports = {
-  initialBlogs,
+  createBlogsWithUserId,
   testUser,
   initialUsers,
   blogsInDb,

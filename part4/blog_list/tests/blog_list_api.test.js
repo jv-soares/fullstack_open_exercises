@@ -7,12 +7,15 @@ const helper = require('./test_helper');
 const Blog = require('../models/blog');
 const User = require('../models/user');
 
-beforeEach(async () => {
-  await Blog.deleteMany({});
-  await Blog.insertMany(helper.initialBlogs);
+let initialBlogs;
 
+beforeEach(async () => {
   await User.deleteMany({});
-  await User(helper.testUser).save();
+  const user = await User(helper.testUser).save();
+
+  await Blog.deleteMany({});
+  initialBlogs = helper.createBlogsWithUserId(user.id);
+  await Blog.insertMany(initialBlogs);
 });
 
 describe('GET /api/blogs', () => {
@@ -22,7 +25,7 @@ describe('GET /api/blogs', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    expect(response.body).toHaveLength(helper.initialBlogs.length);
+    expect(response.body).toHaveLength(initialBlogs.length);
   });
 
   test('blog has id', async () => {
@@ -59,7 +62,7 @@ describe('POST /api/blogs', () => {
       .expect('Content-Type', /application\/json/);
 
     const savedBlogs = await helper.blogsInDb();
-    expect(savedBlogs).toHaveLength(helper.initialBlogs.length + 1);
+    expect(savedBlogs).toHaveLength(initialBlogs.length + 1);
 
     const savedBlogsWithoutId = savedBlogs.map(({ title, author, url }) => ({
       title,
@@ -117,20 +120,28 @@ describe('POST /api/blogs', () => {
 
 describe('DELETE /api/blogs', () => {
   test('succeeds with status code 204 if id is valid', async () => {
+    const token = await helper.getAuthToken();
     const blogsAtStart = await helper.blogsInDb();
     const blogToDelete = blogsAtStart[0];
 
-    await api.delete(`/api/blogs/${blogToDelete.id}`).expect(204);
+    await api
+      .delete(`/api/blogs/${blogToDelete.id}`)
+      .auth(token, { type: 'bearer' })
+      .expect(204);
 
     const blogsAtEnd = await helper.blogsInDb();
 
-    expect(blogsAtEnd).toHaveLength(helper.initialBlogs.length - 1);
+    expect(blogsAtEnd).toHaveLength(initialBlogs.length - 1);
     expect(blogsAtEnd).not.toContainEqual(blogToDelete);
   });
 
   test('fails with status code 400 if id is invalid', async () => {
+    const token = await helper.getAuthToken();
     const invalidId = '123';
-    await api.delete(`/api/blogs/${invalidId}`).expect(400);
+    await api
+      .delete(`/api/blogs/${invalidId}`)
+      .auth(token, { type: 'bearer' })
+      .expect(400);
   });
 });
 
@@ -146,7 +157,10 @@ describe('PUT /api/blogs', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/);
 
-    expect(response.body).toEqual(updatedBlog);
+    expect(response.body).toEqual({
+      ...updatedBlog,
+      user: updatedBlog.user.toString(),
+    });
 
     const blogsAtEnd = await helper.blogsInDb();
     expect(blogsAtEnd).toContainEqual(updatedBlog);
