@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import Blog from './components/Blog';
+import Notification from './components/Notification';
 import blogService from './services/blogs';
 import authService from './services/auth';
 
@@ -13,6 +14,8 @@ const App = () => {
   const [title, setTitle] = useState('');
   const [author, setAuthor] = useState('');
   const [url, setUrl] = useState('');
+
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -30,13 +33,17 @@ const App = () => {
   const handleLogin = async (event) => {
     event.preventDefault();
 
-    const user = await authService.login({ username, password });
-    setUser(user);
-    setUsername('');
-    setPassword('');
+    try {
+      const user = await authService.login({ username, password });
+      setUser(user);
+      setUsername('');
+      setPassword('');
 
-    blogService.setToken(user.token);
-    window.localStorage.setItem('user', JSON.stringify(user));
+      blogService.setToken(user.token);
+      window.localStorage.setItem('user', JSON.stringify(user));
+    } catch (error) {
+      showNotification(error.response.data.error, true);
+    }
   };
 
   const handleLogout = () => {
@@ -49,6 +56,11 @@ const App = () => {
 
     const blog = { title, author, url };
     const createdBlog = await blogService.create(blog);
+
+    showNotification(
+      `blog ${createdBlog.title} added by ${createdBlog.author}`
+    );
+
     const newBlogs = [...blogs, createdBlog];
     setBlogs(newBlogs);
 
@@ -57,9 +69,15 @@ const App = () => {
     setUrl('');
   };
 
+  const showNotification = (message, isError = false) => {
+    setNotification({ message, isError });
+    setTimeout(() => setNotification(null), 3000);
+  };
+
   const loginForm = () => (
     <div>
       <h2>log in</h2>
+      <Notification notification={notification}></Notification>
       <form onSubmit={handleLogin}>
         <div>
           username
@@ -87,6 +105,7 @@ const App = () => {
   const blogList = () => (
     <div>
       <h2>blogs</h2>
+      <Notification notification={notification}></Notification>
       <div>
         logged in as {user.username}
         <button onClick={handleLogout}>logout</button>
