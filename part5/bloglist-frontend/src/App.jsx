@@ -58,6 +58,13 @@ const App = () => {
     );
   };
 
+  const increaseLikes = async (blog) => {
+    const newBlog = { id: blog.id, likes: blog.likes + 1 };
+    const updatedBlog = await blogService.update(newBlog);
+    const newBlogs = blogs.map((e) => (e.id == blog.id ? updatedBlog : e));
+    setBlogs(newBlogs);
+  };
+
   const showNotification = (message, isError = false) => {
     setNotification({ message, isError });
     setTimeout(() => setNotification(null), 3000);
@@ -103,7 +110,7 @@ const App = () => {
         <BlogForm createBlog={createBlog}></BlogForm>
       </Togglable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLike={increaseLikes} />
       ))}
     </div>
   );

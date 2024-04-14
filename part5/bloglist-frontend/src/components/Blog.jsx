@@ -1,6 +1,7 @@
 import { useState } from 'react';
+import blogService from '../services/blogs';
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, handleLike }) => {
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
 
   const toggleDetailsVisibility = () => setIsDetailsVisible(!isDetailsVisible);
@@ -23,7 +24,8 @@ const Blog = ({ blog }) => {
         <ul>
           <li>{blog.url}</li>
           <li>
-            {blog.likes} likes <button>like</button>
+            {blog.likes} likes
+            <button onClick={() => handleLike(blog)}>like</button>
           </li>
           <li>{blog.user.name}</li>
         </ul>

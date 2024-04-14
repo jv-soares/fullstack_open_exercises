@@ -19,6 +19,7 @@ blogsRouter.post(
       const savedBlog = await Blog(blog).save();
       user.blogs = user.blogs.concat(savedBlog.id);
       await user.save();
+      await savedBlog.populate('user', { name: 1, username: 1 });
       response.status(201).json(savedBlog);
     } catch (error) {
       next(error);
@@ -52,7 +53,7 @@ blogsRouter.put('/:id', async (request, response, next) => {
     const result = await Blog.findByIdAndUpdate(id, request.body, {
       new: true,
       runValidators: true,
-    });
+    }).populate('user', { name: 1, username: 1 });
     response.status(201).json(result);
   } catch (error) {
     next(error);
