@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import blogService from '../services/blogs';
 
-const Blog = ({ blog, handleLike }) => {
+const Blog = ({ blog, handleLike, handleDelete }) => {
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
 
   const toggleDetailsVisibility = () => setIsDetailsVisible(!isDetailsVisible);
@@ -14,22 +13,32 @@ const Blog = ({ blog, handleLike }) => {
     marginBottom: 5,
   };
 
+  const showDeleteConfirmationDialog = () => {
+    const shouldDelete = window.confirm(`delete "${blog.title}"?`);
+    if (shouldDelete) handleDelete(blog.id);
+  };
+
+  const details = (
+    <div>
+      <ul>
+        <li>{blog.url}</li>
+        <li>
+          {blog.likes} likes
+          <button onClick={() => handleLike(blog)}>like</button>
+        </li>
+        <li>{blog.user.name}</li>
+      </ul>
+      <button onClick={showDeleteConfirmationDialog}>delete</button>
+    </div>
+  );
+
   return (
     <div style={blogStyle}>
       {blog.title} {blog.author}
       <button onClick={toggleDetailsVisibility}>
         {isDetailsVisible ? 'hide' : 'view'}
       </button>
-      {isDetailsVisible && (
-        <ul>
-          <li>{blog.url}</li>
-          <li>
-            {blog.likes} likes
-            <button onClick={() => handleLike(blog)}>like</button>
-          </li>
-          <li>{blog.user.name}</li>
-        </ul>
-      )}
+      {isDetailsVisible && details}
     </div>
   );
 };
