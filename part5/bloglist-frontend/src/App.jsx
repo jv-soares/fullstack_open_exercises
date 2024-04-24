@@ -64,7 +64,7 @@ const App = () => {
   const deleteBlog = async (blogId) => {
     const didDelete = await blogService.remove(blogId);
     if (didDelete) {
-      const newBlogs = blogs.filter((e) => e.id != blogId);
+      const newBlogs = blogs.filter((e) => e.id !== blogId);
       setBlogs(newBlogs);
     }
   };
@@ -72,7 +72,7 @@ const App = () => {
   const increaseLikes = async (blog) => {
     const newBlog = { id: blog.id, likes: blog.likes + 1 };
     const updatedBlog = await blogService.update(newBlog);
-    const newBlogs = blogs.map((e) => (e.id == blog.id ? updatedBlog : e));
+    const newBlogs = blogs.map((e) => (e.id === blog.id ? updatedBlog : e));
     setBlogs(newBlogs);
   };
 
