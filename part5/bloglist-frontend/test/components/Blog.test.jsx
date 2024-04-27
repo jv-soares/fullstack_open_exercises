@@ -38,13 +38,13 @@ test('should also render likes and url when "view" button is pressed', async () 
 });
 
 test('should call handleLike callback when like button is pressed', async () => {
+  const user = userEvent.setup();
   const mockHandleLike = vi.fn();
 
   const { container } = render(
     <Blog blog={blog} handleLike={mockHandleLike}></Blog>
   );
 
-  const user = userEvent.setup();
   const viewButton = screen.getByText('view');
   await user.click(viewButton);
 
