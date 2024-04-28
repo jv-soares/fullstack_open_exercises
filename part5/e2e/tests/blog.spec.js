@@ -2,8 +2,13 @@ const { test, expect, beforeEach, describe } = require('@playwright/test');
 
 describe('Blog app', () => {
   beforeEach(async ({ page }) => {
-    await page.goto('http://localhost:5173');
+    await page.goto('/');
   });
 
-  test('Login form is shown', async ({ page }) => {});
+  test('Login form is shown', async ({ page }) => {
+    await expect(page.getByText('log in')).toBeVisible();
+    await expect(page.getByTestId('username')).toBeVisible();
+    await expect(page.getByTestId('password')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'login' })).toBeVisible();
+  });
 });
