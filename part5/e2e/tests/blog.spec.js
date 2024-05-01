@@ -59,8 +59,7 @@ describe('Blog app', () => {
         url: 'https://testurl.com',
       };
       await helper.createBlog(page, blog);
-      const blogLocator = page.locator('.blog-list').getByText(blog.title);
-      await blogLocator.getByRole('button', { name: 'view' }).click();
+      const blogLocator = await helper.viewBlogDetails(page, blog.title);
       await expect(blogLocator.getByText('0 likes')).toBeVisible();
       await blogLocator.getByRole('button', { name: 'like' }).click();
       await expect(blogLocator.getByText('1 likes')).toBeVisible();
@@ -73,8 +72,7 @@ describe('Blog app', () => {
         url: 'https://testurl.com',
       };
       await helper.createBlog(page, blog);
-      const blogLocator = page.locator('.blog-list').getByText(blog.title);
-      await blogLocator.getByRole('button', { name: 'view' }).click();
+      const blogLocator = await helper.viewBlogDetails(page, blog.title);
       page.on('dialog', (dialog) => dialog.accept());
       await blogLocator.getByRole('button', { name: 'delete' }).click();
       await expect(blogLocator).toBeHidden();
@@ -99,8 +97,7 @@ describe('Blog app', () => {
       await helper.createBlog(page, blog);
       await page.getByRole('button', { name: 'logout' }).click();
       await helper.loginWith(page, 'testuser2', 'test123');
-      const blogLocator = page.locator('.blog-list').getByText(blog.title);
-      await blogLocator.getByRole('button', { name: 'view' }).click();
+      const blogLocator = await helper.viewBlogDetails(page, blog.title);
       const deleteButtonLocator = blogLocator.getByRole('button', {
         name: 'delete',
       });
