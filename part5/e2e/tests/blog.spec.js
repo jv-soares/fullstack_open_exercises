@@ -39,13 +39,28 @@ describe('Blog app', () => {
     });
 
     test('a new blog can be created', async ({ page }) => {
-      await page.getByRole('button', { name: 'create blog' }).click();
-      await page.getByTestId('blog-title').fill('Test Blog');
-      await page.getByTestId('blog-author').fill('Test Author');
-      await page.getByTestId('blog-url').fill('https://testurl.com');
-      await page.getByRole('button', { name: 'submit' }).click();
+      const blog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'https://testurl.com',
+      };
+      await helper.createBlog(page, blog);
       const blogsLocator = page.locator('.blog-list');
-      await expect(blogsLocator.getByText('Test Blog')).toBeVisible();
+      await expect(blogsLocator.getByText(blog.title)).toBeVisible();
+    });
+
+    test('a blog can be liked', async ({ page }) => {
+      const blog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'https://testurl.com',
+      };
+      await helper.createBlog(page, blog);
+      const blogLocator = page.locator('.blog-list').getByText(blog.title);
+      await blogLocator.getByRole('button', { name: 'view' }).click();
+      await expect(blogLocator.getByText('0 likes')).toBeVisible();
+      await blogLocator.getByRole('button', { name: 'like' }).click();
+      await expect(blogLocator.getByText('1 likes')).toBeVisible();
     });
   });
 });
