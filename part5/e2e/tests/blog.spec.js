@@ -4,9 +4,12 @@ const helper = require('./helper');
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
     await request.post('/api/testing/reset');
-    await request.post('/api/users', {
-      data: { username: 'testuser', name: 'Test User', password: 'test123' },
-    });
+    const user = {
+      username: 'testuser',
+      name: 'Test User',
+      password: 'test123',
+    };
+    await helper.createUser(request, user);
     await page.goto('/');
   });
 
@@ -75,6 +78,33 @@ describe('Blog app', () => {
       page.on('dialog', (dialog) => dialog.accept());
       await blogLocator.getByRole('button', { name: 'delete' }).click();
       await expect(blogLocator).toBeHidden();
+    });
+
+    test('a blogs delete button is only visible to its creator', async ({
+      page,
+      request,
+    }) => {
+      const newUser = {
+        username: 'testuser2',
+        name: 'Test User 2',
+        password: 'test123',
+      };
+      await helper.createUser(request, newUser);
+
+      const blog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'https://testurl.com',
+      };
+      await helper.createBlog(page, blog);
+      await page.getByRole('button', { name: 'logout' }).click();
+      await helper.loginWith(page, 'testuser2', 'test123');
+      const blogLocator = page.locator('.blog-list').getByText(blog.title);
+      await blogLocator.getByRole('button', { name: 'view' }).click();
+      const deleteButtonLocator = blogLocator.getByRole('button', {
+        name: 'delete',
+      });
+      await expect(deleteButtonLocator).toBeHidden();
     });
   });
 });

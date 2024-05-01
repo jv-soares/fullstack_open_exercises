@@ -129,6 +129,7 @@ const App = () => {
             blog={blog}
             handleLike={increaseLikes}
             handleDelete={deleteBlog}
+            canDelete={user.id === blog.user.id}
           />
         ))}
       </div>

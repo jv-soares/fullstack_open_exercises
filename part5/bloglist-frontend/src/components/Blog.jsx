@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Blog = ({ blog, handleLike, handleDelete }) => {
+const Blog = ({ blog, handleLike, handleDelete, canDelete }) => {
   const [isDetailsVisible, setIsDetailsVisible] = useState(false);
 
   const toggleDetailsVisibility = () => setIsDetailsVisible(!isDetailsVisible);
@@ -28,7 +28,9 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
         </li>
         <li>{blog.user.name}</li>
       </ul>
-      <button onClick={showDeleteConfirmationDialog}>delete</button>
+      {canDelete && (
+        <button onClick={showDeleteConfirmationDialog}>delete</button>
+      )}
     </div>
   );
 
