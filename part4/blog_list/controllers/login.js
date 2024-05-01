@@ -15,7 +15,12 @@ loginRouter.post('/', async (request, response) => {
       { id: user.id, username: user.username },
       process.env.JWT_SECRET
     );
-    response.send({ token, username: user.username, name: user.name });
+    response.send({
+      token,
+      username: user.username,
+      name: user.name,
+      id: user.id,
+    });
   } else {
     response.status(401).send({ error: 'invalid username or password' });
   }
