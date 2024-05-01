@@ -23,7 +23,7 @@ const Blog = ({ blog, handleLike, handleDelete, canDelete }) => {
       <ul>
         <li className="blog-url">{blog.url}</li>
         <li className="blog-likes">
-          {blog.likes} likes
+          <span>{blog.likes} likes</span>
           <button onClick={() => handleLike(blog)}>like</button>
         </li>
         <li>{blog.user.name}</li>

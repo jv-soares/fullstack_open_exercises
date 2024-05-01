@@ -106,5 +106,64 @@ describe('Blog app', () => {
       });
       await expect(deleteButtonLocator).toBeHidden();
     });
+
+    test('blogs are sorted by descending like count', async ({ page }) => {
+      const blogs = [
+        {
+          title: 'Test Blog 1',
+          author: 'Test Author',
+          url: 'https://testurl.com/1',
+        },
+        {
+          title: 'Test Blog 2',
+          author: 'Test Author',
+          url: 'https://testurl.com/2',
+        },
+        {
+          title: 'Test Blog 3',
+          author: 'Test Author',
+          url: 'https://testurl.com/3',
+        },
+      ];
+
+      const isArrayDescending = (array) =>
+        array.every(
+          (element, index, array) => !index || array[index - 1] >= element
+        );
+
+      const likeBlogsInAscendingOrder = async () => {
+        await helper.likeBlog(page, blogs[0].title, 1);
+        await helper.likeBlog(page, blogs[1].title, 2);
+        await helper.likeBlog(page, blogs[2].title, 3);
+      };
+
+      const createAllBlogs = async () => {
+        for (const blog of blogs) {
+          await helper.createBlog(page, blog);
+          await page.getByRole('button', { name: 'cancel' }).click();
+        }
+      };
+
+      const expandAllBlogDetails = async () => {
+        for (const blog of blogs) {
+          await helper.viewBlogDetails(page, blog.title);
+        }
+      };
+
+      const getLikesArray = async () => {
+        const likeTexts = await page
+          .locator('.blog-likes')
+          .locator('span')
+          .allTextContents();
+        return likeTexts.map((e) => parseInt(e.split(' ')[0]));
+      };
+
+      await createAllBlogs();
+      await likeBlogsInAscendingOrder();
+      await page.reload();
+      await expandAllBlogDetails();
+      const likes = await getLikesArray();
+      expect(isArrayDescending(likes)).toBeTruthy();
+    });
   });
 });
