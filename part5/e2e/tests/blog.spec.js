@@ -1,4 +1,5 @@
 const { test, expect, beforeEach, describe } = require('@playwright/test');
+const helper = require('./helper');
 
 describe('Blog app', () => {
   beforeEach(async ({ page, request }) => {
@@ -19,9 +20,7 @@ describe('Blog app', () => {
   describe('Login', () => {
     test('succeeds with correct credentials', async ({ page }) => {
       const username = 'testuser';
-      await page.getByTestId('username').fill(username);
-      await page.getByTestId('password').fill('test123');
-      await page.getByRole('button', { name: 'login' }).click();
+      await helper.loginWith(page, username, 'test123');
       await expect(page.getByText(`logged in as ${username}`)).toBeVisible();
     });
 
@@ -31,6 +30,22 @@ describe('Blog app', () => {
       await page.getByRole('button', { name: 'login' }).click();
       const errorLocator = page.getByText(`invalid username or password`);
       await expect(errorLocator).toBeVisible();
+    });
+  });
+
+  describe('When logged in', () => {
+    beforeEach(async ({ page }) => {
+      await helper.loginWith(page, 'testuser', 'test123');
+    });
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByRole('button', { name: 'create blog' }).click();
+      await page.getByTestId('blog-title').fill('Test Blog');
+      await page.getByTestId('blog-author').fill('Test Author');
+      await page.getByTestId('blog-url').fill('https://testurl.com');
+      await page.getByRole('button', { name: 'submit' }).click();
+      const blogsLocator = page.locator('.blog-list');
+      await expect(blogsLocator.getByText('Test Blog')).toBeVisible();
     });
   });
 });
