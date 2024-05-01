@@ -62,5 +62,19 @@ describe('Blog app', () => {
       await blogLocator.getByRole('button', { name: 'like' }).click();
       await expect(blogLocator.getByText('1 likes')).toBeVisible();
     });
+
+    test('a blog can be deleted by its creator', async ({ page }) => {
+      const blog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'https://testurl.com',
+      };
+      await helper.createBlog(page, blog);
+      const blogLocator = page.locator('.blog-list').getByText(blog.title);
+      await blogLocator.getByRole('button', { name: 'view' }).click();
+      page.on('dialog', (dialog) => dialog.accept());
+      await blogLocator.getByRole('button', { name: 'delete' }).click();
+      await expect(blogLocator).toBeHidden();
+    });
   });
 });
