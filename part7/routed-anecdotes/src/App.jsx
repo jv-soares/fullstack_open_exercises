@@ -109,10 +109,16 @@ const CreateNew = (props) => {
     navigate('/');
   };
 
+  const resetAll = () => {
+    contentField.onReset();
+    authorField.onReset();
+    infoField.onReset();
+  };
+
   return (
     <div>
       <h2>create a new anecdote</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} onReset={resetAll}>
         <div>
           content
           <input {...contentField} />
@@ -125,7 +131,8 @@ const CreateNew = (props) => {
           url for more info
           <input {...infoField} />
         </div>
-        <button>create</button>
+        <button type="submit">create</button>
+        <button type="reset">reset</button>
       </form>
     </div>
   );
