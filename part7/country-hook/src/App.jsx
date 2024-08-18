@@ -1,5 +1,13 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+
+const baseUrl = `https://studies.cs.helsinki.fi/restcountries/api/name`;
+
+const getByName = async (name) => {
+  const url = `${baseUrl}/${name}`;
+  const response = await axios.get(url);
+  return response.data;
+};
 
 const useField = (type) => {
   const [value, setValue] = useState('');
@@ -18,7 +26,26 @@ const useField = (type) => {
 const useCountry = (name) => {
   const [country, setCountry] = useState(null);
 
-  useEffect(() => {});
+  useEffect(() => {
+    if (!name) return;
+    getByName(name)
+      .then((data) => {
+        setCountry({
+          data: {
+            name: data.name.common,
+            capital: data.capital[0],
+            population: data.population,
+            flag: data.flags.png,
+          },
+          found: true,
+        });
+      })
+      .catch((error) => {
+        if (error.response.data.error === 'not found') {
+          setCountry({ found: false });
+        }
+      });
+  }, [name]);
 
   return country;
 };
