@@ -42,7 +42,7 @@ test('should call handleLike callback when like button is pressed', async () => 
   const mockHandleLike = vi.fn();
 
   const { container } = render(
-    <Blog blog={blog} handleLike={mockHandleLike}></Blog>
+    <Blog blog={blog} handleLike={mockHandleLike}></Blog>,
   );
 
   const viewButton = screen.getByText('view');

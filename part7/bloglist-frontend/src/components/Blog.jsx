@@ -21,8 +21,8 @@ const Blog = ({ blog, handleLike, handleDelete, canDelete }) => {
   const details = (
     <div>
       <ul>
-        <li className="blog-url">{blog.url}</li>
-        <li className="blog-likes">
+        <li className='blog-url'>{blog.url}</li>
+        <li className='blog-likes'>
           <span>{blog.likes} likes</span>
           <button onClick={() => handleLike(blog)}>like</button>
         </li>

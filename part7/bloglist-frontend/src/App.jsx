@@ -57,7 +57,7 @@ const App = () => {
     const newBlogs = [...blogs, createdBlog];
     setBlogs(newBlogs);
     showNotification(
-      `blog ${createdBlog.title} added by ${createdBlog.author}`
+      `blog ${createdBlog.title} added by ${createdBlog.author}`,
     );
   };
 
@@ -89,24 +89,24 @@ const App = () => {
         <div>
           username
           <input
-            type="text"
-            name="username"
+            type='text'
+            name='username'
             value={username}
             onChange={({ target }) => setUsername(target.value)}
-            data-testid="username"
+            data-testid='username'
           />
         </div>
         <div>
           password
           <input
-            type="password"
-            name="password"
+            type='password'
+            name='password'
             value={password}
             onChange={({ target }) => setPassword(target.value)}
-            data-testid="password"
+            data-testid='password'
           />
         </div>
-        <button type="submit">login</button>
+        <button type='submit'>login</button>
       </form>
     </div>
   );
@@ -119,10 +119,10 @@ const App = () => {
         logged in as {user.username}
         <button onClick={handleLogout}>logout</button>
       </div>
-      <Togglable buttonLabel="create blog">
+      <Togglable buttonLabel='create blog'>
         <BlogForm createBlog={createBlog}></BlogForm>
       </Togglable>
-      <div className="blog-list">
+      <div className='blog-list'>
         {blogs.map((blog) => (
           <Blog
             key={blog.id}
