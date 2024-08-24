@@ -1,19 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Blog from './components/Blog';
-import Notification from './components/Notification';
-import blogService from './services/blogs';
-import authService from './services/auth';
 import BlogForm from './components/BlogForm';
+import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import {
+  clearNotification,
+  setNotification,
+} from './reducers/notificationReducer';
+import authService from './services/auth';
+import blogService from './services/blogs';
 
 const App = () => {
+  const dispatch = useDispatch();
+
   const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
   const [user, setUser] = useState(null);
 
-  const [notification, setNotification] = useState(null);
+  const notification = useSelector((state) => state.notification);
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -77,8 +84,8 @@ const App = () => {
   };
 
   const showNotification = (message, isError = false) => {
-    setNotification({ message, isError });
-    setTimeout(() => setNotification(null), 3000);
+    dispatch(setNotification({ message, isError }));
+    setTimeout(clearNotification, 3000);
   };
 
   const loginForm = () => (
