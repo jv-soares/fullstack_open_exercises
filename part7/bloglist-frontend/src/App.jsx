@@ -4,6 +4,7 @@ import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
+import { blogsSet, createBlog, getBlogs } from './reducers/blogReducer';
 import {
   clearNotification,
   setNotification,
@@ -14,7 +15,8 @@ import blogService from './services/blogs';
 const App = () => {
   const dispatch = useDispatch();
 
-  const [blogs, setBlogs] = useState([]);
+  const blogs = useSelector((state) => state.blogs);
+
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,11 +25,8 @@ const App = () => {
   const notification = useSelector((state) => state.notification);
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      const sortedBlogs = blogs.sort((a, b) => b.likes - a.likes);
-      setBlogs(sortedBlogs);
-    });
-  }, []);
+    dispatch(getBlogs());
+  }, [dispatch]);
 
   useEffect(() => {
     const userData = window.localStorage.getItem('user');
@@ -59,10 +58,8 @@ const App = () => {
     window.localStorage.clear();
   };
 
-  const createBlog = async (blog) => {
-    const createdBlog = await blogService.create(blog);
-    const newBlogs = [...blogs, createdBlog];
-    setBlogs(newBlogs);
+  const create = async (blog) => {
+    const createdBlog = await dispatch(createBlog(blog));
     showNotification(
       `blog ${createdBlog.title} added by ${createdBlog.author}`,
     );
@@ -72,7 +69,7 @@ const App = () => {
     const didDelete = await blogService.remove(blogId);
     if (didDelete) {
       const newBlogs = blogs.filter((e) => e.id !== blogId);
-      setBlogs(newBlogs);
+      dispatch(blogsSet(newBlogs));
     }
   };
 
@@ -80,12 +77,12 @@ const App = () => {
     const newBlog = { id: blog.id, likes: blog.likes + 1 };
     const updatedBlog = await blogService.update(newBlog);
     const newBlogs = blogs.map((e) => (e.id === blog.id ? updatedBlog : e));
-    setBlogs(newBlogs);
+    dispatch(blogsSet(newBlogs));
   };
 
   const showNotification = (message, isError = false) => {
     dispatch(setNotification({ message, isError }));
-    setTimeout(clearNotification, 3000);
+    setTimeout(() => dispatch(clearNotification()), 3000);
   };
 
   const loginForm = () => (
@@ -127,7 +124,7 @@ const App = () => {
         <button onClick={handleLogout}>logout</button>
       </div>
       <Togglable buttonLabel='create blog'>
-        <BlogForm createBlog={createBlog}></BlogForm>
+        <BlogForm createBlog={create}></BlogForm>
       </Togglable>
       <div className='blog-list'>
         {blogs.map((blog) => (
