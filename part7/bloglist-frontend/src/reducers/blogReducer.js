@@ -30,6 +30,27 @@ export const createBlog = (blog) => {
   };
 };
 
+export const deleteBlog = (blogId) => {
+  return async (dispatch, getState) => {
+    const didDelete = await blogService.remove(blogId);
+    if (didDelete) {
+      const blogs = getState().blogs;
+      const newBlogs = blogs.filter((e) => e.id !== blogId);
+      dispatch(blogsSet(newBlogs));
+    }
+  };
+};
+
+export const likeBlog = (blog) => {
+  return async (dispatch, getState) => {
+    const newBlog = { id: blog.id, likes: blog.likes + 1 };
+    const updatedBlog = await blogService.update(newBlog);
+    const blogs = getState().blogs;
+    const newBlogs = blogs.map((e) => (e.id === blog.id ? updatedBlog : e));
+    dispatch(blogsSet(newBlogs));
+  };
+};
+
 export const { blogsSet, blogAppended } = blogSlice.actions;
 
 export default blogSlice.reducer;

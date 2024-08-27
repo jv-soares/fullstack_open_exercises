@@ -4,7 +4,12 @@ import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
 import Togglable from './components/Togglable';
-import { blogsSet, createBlog, getBlogs } from './reducers/blogReducer';
+import {
+  createBlog,
+  deleteBlog,
+  getBlogs,
+  likeBlog,
+} from './reducers/blogReducer';
 import {
   clearNotification,
   setNotification,
@@ -65,21 +70,6 @@ const App = () => {
     );
   };
 
-  const deleteBlog = async (blogId) => {
-    const didDelete = await blogService.remove(blogId);
-    if (didDelete) {
-      const newBlogs = blogs.filter((e) => e.id !== blogId);
-      dispatch(blogsSet(newBlogs));
-    }
-  };
-
-  const increaseLikes = async (blog) => {
-    const newBlog = { id: blog.id, likes: blog.likes + 1 };
-    const updatedBlog = await blogService.update(newBlog);
-    const newBlogs = blogs.map((e) => (e.id === blog.id ? updatedBlog : e));
-    dispatch(blogsSet(newBlogs));
-  };
-
   const showNotification = (message, isError = false) => {
     dispatch(setNotification({ message, isError }));
     setTimeout(() => dispatch(clearNotification()), 3000);
@@ -131,8 +121,8 @@ const App = () => {
           <Blog
             key={blog.id}
             blog={blog}
-            handleLike={increaseLikes}
-            handleDelete={deleteBlog}
+            handleLike={() => dispatch(likeBlog(blog))}
+            handleDelete={() => dispatch(deleteBlog(blog.id))}
             canDelete={user.id === blog.user.id}
           />
         ))}
