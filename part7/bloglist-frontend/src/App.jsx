@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Outlet } from 'react-router-dom';
 import Blog from './components/Blog';
 import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
@@ -92,6 +93,9 @@ const App = () => {
       <div>
         logged in as {user.username}
         <button onClick={() => dispatch(signOut())}>logout</button>
+      </div>
+      <div>
+        <Outlet></Outlet>
       </div>
       <Togglable buttonLabel='create blog'>
         <BlogForm createBlog={create}></BlogForm>
