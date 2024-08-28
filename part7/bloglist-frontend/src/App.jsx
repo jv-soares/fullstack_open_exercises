@@ -31,13 +31,13 @@ const App = () => {
     dispatch(getBlogs());
   }, [dispatch]);
 
-  const handleLogin = (event) => {
+  const handleLogin = async (event) => {
     event.preventDefault();
 
     try {
       setUsername('');
       setPassword('');
-      dispatch(signIn(username, password));
+      await dispatch(signIn(username, password));
     } catch (error) {
       showNotification(error.response.data.error, true);
     }
