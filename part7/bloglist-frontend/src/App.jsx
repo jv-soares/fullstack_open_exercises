@@ -14,53 +14,33 @@ import {
   clearNotification,
   setNotification,
 } from './reducers/notificationReducer';
-import authService from './services/auth';
-import blogService from './services/blogs';
+import { initializeUser, signIn, signOut } from './reducers/userReducer';
 
 const App = () => {
   const dispatch = useDispatch();
 
+  const user = useSelector((state) => state.user);
   const blogs = useSelector((state) => state.blogs);
+  const notification = useSelector((state) => state.notification);
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const [user, setUser] = useState(null);
-
-  const notification = useSelector((state) => state.notification);
-
   useEffect(() => {
+    dispatch(initializeUser());
     dispatch(getBlogs());
   }, [dispatch]);
 
-  useEffect(() => {
-    const userData = window.localStorage.getItem('user');
-    if (userData) {
-      const user = JSON.parse(userData);
-      setUser(user);
-      blogService.setToken(user.token);
-    }
-  }, []);
-
-  const handleLogin = async (event) => {
+  const handleLogin = (event) => {
     event.preventDefault();
 
     try {
-      const user = await authService.login({ username, password });
-      setUser(user);
       setUsername('');
       setPassword('');
-
-      blogService.setToken(user.token);
-      window.localStorage.setItem('user', JSON.stringify(user));
+      dispatch(signIn(username, password));
     } catch (error) {
       showNotification(error.response.data.error, true);
     }
-  };
-
-  const handleLogout = () => {
-    setUser(null);
-    window.localStorage.clear();
   };
 
   const create = async (blog) => {
@@ -111,7 +91,7 @@ const App = () => {
       <Notification notification={notification}></Notification>
       <div>
         logged in as {user.username}
-        <button onClick={handleLogout}>logout</button>
+        <button onClick={() => dispatch(signOut())}>logout</button>
       </div>
       <Togglable buttonLabel='create blog'>
         <BlogForm createBlog={create}></BlogForm>
