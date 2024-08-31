@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Outlet } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import Notification from './components/Notification';
 import { getBlogs } from './reducers/blogReducer';
 import {
@@ -72,12 +72,15 @@ const App = () => {
 
   const home = () => (
     <div>
-      <h2>blogs</h2>
-      <Notification notification={notification}></Notification>
       <div>
+        <Link to='/'>blogs</Link>
+        <Link to='/users'>users</Link>
         logged in as {user.username}
         <button onClick={() => dispatch(signOut())}>logout</button>
       </div>
+      <h2>blog app</h2>
+      <Notification notification={notification}></Notification>
+      <div></div>
       <Outlet></Outlet>
     </div>
   );
