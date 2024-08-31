@@ -1,10 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
-import BlogForm from '../components/BlogForm';
-import Togglable from '../components/Togglable';
+import BlogForm from './BlogForm';
+import Togglable from './Togglable';
 import { createBlog, deleteBlog, likeBlog } from '../reducers/blogReducer';
 import {
-    clearNotification,
-    setNotification,
+  clearNotification,
+  setNotification,
 } from '../reducers/notificationReducer';
 import Blog from './Blog';
 
