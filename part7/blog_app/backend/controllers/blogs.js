@@ -69,4 +69,22 @@ blogsRouter.get('/:id/comments', async (request, response) => {
   response.json(comments);
 });
 
+blogsRouter.post(
+  '/:id/comments',
+  middleware.userExtractor,
+  async (request, response, next) => {
+    try {
+      const blogId = request.params.id;
+      const user = request.user;
+      if (!user) return response.status(401).end();
+      const comment = { ...request.body, blog: blogId };
+      const savedComment = await Comment(comment).save();
+      await savedComment.populate('blog', { id: 1 });
+      response.status(201).json(savedComment);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 module.exports = blogsRouter;

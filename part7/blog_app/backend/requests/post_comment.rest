@@ -1,0 +1,7 @@
+POST http://localhost:3003/api/blogs/66d30fc9825bd1ecf8efa44d/comments
+Content-Type: application/json
+Authorization: Bearer
+
+{
+    "content": "first!"
+}
