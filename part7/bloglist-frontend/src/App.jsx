@@ -1,16 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet } from 'react-router-dom';
-import Blog from './components/Blog';
-import BlogForm from './components/BlogForm';
 import Notification from './components/Notification';
-import Togglable from './components/Togglable';
-import {
-  createBlog,
-  deleteBlog,
-  getBlogs,
-  likeBlog,
-} from './reducers/blogReducer';
+import { getBlogs } from './reducers/blogReducer';
 import {
   clearNotification,
   setNotification,
@@ -21,7 +13,6 @@ const App = () => {
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user);
-  const blogs = useSelector((state) => state.blogs);
   const notification = useSelector((state) => state.notification);
 
   const [username, setUsername] = useState('');
@@ -42,13 +33,6 @@ const App = () => {
     } catch (error) {
       showNotification(error.response.data.error, true);
     }
-  };
-
-  const create = async (blog) => {
-    const createdBlog = await dispatch(createBlog(blog));
-    showNotification(
-      `blog ${createdBlog.title} added by ${createdBlog.author}`,
-    );
   };
 
   const showNotification = (message, isError = false) => {
@@ -86,7 +70,7 @@ const App = () => {
     </div>
   );
 
-  const blogList = () => (
+  const home = () => (
     <div>
       <h2>blogs</h2>
       <Notification notification={notification}></Notification>
@@ -94,27 +78,11 @@ const App = () => {
         logged in as {user.username}
         <button onClick={() => dispatch(signOut())}>logout</button>
       </div>
-      <div>
-        <Outlet></Outlet>
-      </div>
-      <Togglable buttonLabel='create blog'>
-        <BlogForm createBlog={create}></BlogForm>
-      </Togglable>
-      <div className='blog-list'>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            handleLike={() => dispatch(likeBlog(blog))}
-            handleDelete={() => dispatch(deleteBlog(blog.id))}
-            canDelete={user.id === blog.user.id}
-          />
-        ))}
-      </div>
+      <Outlet></Outlet>
     </div>
   );
 
-  return user === null ? loginForm() : blogList();
+  return user === null ? loginForm() : home();
 };
 
 export default App;
