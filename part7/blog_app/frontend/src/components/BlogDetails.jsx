@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { useLoaderData, useNavigate } from 'react-router-dom';
 import { deleteBlog, likeBlog } from '../reducers/blogReducer';
+import Comments from './Comments';
 
 export const loader = async ({ params }) => {
   const blogId = params.id;
@@ -36,6 +37,7 @@ const BlogDetails = () => {
       </div>
       <p>added by {blog.author}</p>
       <button onClick={showDeleteConfirmationDialog}>delete</button>
+      <Comments />
     </div>
   );
 };
