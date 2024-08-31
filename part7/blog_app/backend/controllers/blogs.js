@@ -61,8 +61,11 @@ blogsRouter.put('/:id', async (request, response, next) => {
   }
 });
 
-blogsRouter.get('/:id/comments', async (request, response, next) => {
-  const comments = await Comment.find({}).populate('blog', { id: 1 });
+blogsRouter.get('/:id/comments', async (request, response) => {
+  const blogId = request.params.id;
+  const comments = await Comment.find({ blog: blogId }).populate('blog', {
+    id: 1,
+  });
   response.json(comments);
 });
 
