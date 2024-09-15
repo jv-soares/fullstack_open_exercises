@@ -19,6 +19,8 @@ const BlogDetails = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const user = useSelector((state) => state.user);
+
   const blog = useBlog();
   if (!blog) return;
 
@@ -48,14 +50,16 @@ const BlogDetails = () => {
         </Box>
         <Typography variant='subtitle1'>Added by {blog.author}</Typography>
         <Link href={blog.url}>{blog.url}</Link>
-        <Button
-          variant='outlined'
-          color='error'
-          sx={{ alignSelf: 'start' }}
-          onClick={showDeleteConfirmationDialog}
-        >
-          <Icon sx={{ mr: 1 }}>delete</Icon> Delete blog
-        </Button>
+        {blog.user.id === user.id && (
+          <Button
+            variant='outlined'
+            color='error'
+            sx={{ alignSelf: 'start' }}
+            onClick={showDeleteConfirmationDialog}
+          >
+            <Icon sx={{ mr: 1 }}>delete</Icon> Delete blog
+          </Button>
+        )}
       </Stack>
       <Comments />
     </div>
