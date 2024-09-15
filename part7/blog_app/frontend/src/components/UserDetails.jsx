@@ -1,3 +1,4 @@
+import { Stack, Typography } from '@mui/material';
 import { useLoaderData } from 'react-router-dom';
 import userService from '../services/user';
 
@@ -13,11 +14,19 @@ const UserDetails = () => {
 
   return (
     <div>
-      <h2>{user.name}</h2>
-      <h3>added blogs</h3>
-      {user.blogs.map((blog) => (
-        <li key={blog.id}>{blog.title}</li>
-      ))}
+      <Stack spacing={2} mb={6}>
+        <Typography variant='h3' component='h2' sx={{ mr: 4 }}>
+          {user.name}
+        </Typography>
+        <Typography variant='h5' component='h3'>
+          Added blogs
+        </Typography>
+        <div>
+          {user.blogs.map((blog) => (
+            <li key={blog.id}>{blog.title}</li>
+          ))}
+        </div>
+      </Stack>
     </div>
   );
 };

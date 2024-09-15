@@ -1,11 +1,8 @@
+import { Box, Button, Icon } from '@mui/material';
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import BlogForm from './BlogForm';
-import Togglable from './Togglable';
-import { createBlog, deleteBlog, likeBlog } from '../reducers/blogReducer';
-import {
-  clearNotification,
-  setNotification,
-} from '../reducers/notificationReducer';
+import { deleteBlog, likeBlog } from '../reducers/blogReducer';
+import AddBlogDialog from './AddBlogDialog';
 import Blog from './Blog';
 
 const BlogList = () => {
@@ -14,23 +11,14 @@ const BlogList = () => {
   const blogs = useSelector((state) => state.blogs);
   const user = useSelector((state) => state.user);
 
-  const create = async (blog) => {
-    const createdBlog = await dispatch(createBlog(blog));
-    showNotification(
-      `blog ${createdBlog.title} added by ${createdBlog.author}`,
-    );
-  };
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const showNotification = (message, isError = false) => {
-    dispatch(setNotification({ message, isError }));
-    setTimeout(() => dispatch(clearNotification()), 3000);
-  };
+  const openDialog = () => setIsDialogOpen(true);
+
+  const closeDialog = () => setIsDialogOpen(false);
 
   return (
-    <div className='blog-list'>
-      <Togglable buttonLabel='create blog'>
-        <BlogForm createBlog={create}></BlogForm>
-      </Togglable>
+    <Box className='blog-list' display='flex' flexDirection='column'>
       {blogs.map((blog) => (
         <Blog
           key={blog.id}
@@ -40,7 +28,17 @@ const BlogList = () => {
           canDelete={user.id === blog.user.id}
         />
       ))}
-    </div>
+      <Button
+        variant='contained'
+        size='large'
+        onClick={openDialog}
+        sx={{ alignSelf: 'center' }}
+      >
+        <Icon>add</Icon>
+        Add blog
+      </Button>
+      <AddBlogDialog isOpen={isDialogOpen} handleClose={closeDialog} />
+    </Box>
   );
 };
 

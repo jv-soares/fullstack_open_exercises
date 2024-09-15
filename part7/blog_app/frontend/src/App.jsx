@@ -1,12 +1,19 @@
+import {
+  AppBar,
+  Box,
+  Button,
+  Container,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, Outlet } from 'react-router-dom';
 import Notification from './components/Notification';
 import { getBlogs } from './reducers/blogReducer';
-import {
-  clearNotification,
-  setNotification,
-} from './reducers/notificationReducer';
+import { showNotification } from './reducers/notificationReducer';
 import { initializeUser, signIn, signOut } from './reducers/userReducer';
 
 const App = () => {
@@ -31,61 +38,89 @@ const App = () => {
       setPassword('');
       await dispatch(signIn(username, password));
     } catch (error) {
-      showNotification(error.response.data.error, true);
+      const notification = {
+        message: error.response.data.error,
+        isError: true,
+      };
+      dispatch(showNotification(notification));
     }
   };
 
-  const showNotification = (message, isError = false) => {
-    dispatch(setNotification({ message, isError }));
-    setTimeout(() => dispatch(clearNotification()), 3000);
-  };
-
   const loginForm = () => (
-    <div>
-      <h2>log in</h2>
-      <Notification notification={notification}></Notification>
-      <form onSubmit={handleLogin}>
-        <div>
-          username
-          <input
-            type='text'
-            name='username'
-            value={username}
-            onChange={({ target }) => setUsername(target.value)}
-            data-testid='username'
-          />
-        </div>
-        <div>
-          password
-          <input
-            type='password'
-            name='password'
-            value={password}
-            onChange={({ target }) => setPassword(target.value)}
-            data-testid='password'
-          />
-        </div>
-        <button type='submit'>login</button>
-      </form>
-    </div>
+    <Container maxWidth='xs' sx={{ height: '100vh' }}>
+      <Stack
+        spacing={2}
+        sx={{
+          textAlign: 'center',
+          justifyContent: 'center',
+          height: '100%',
+        }}
+      >
+        <Typography variant='h4' component='h1'>
+          Welcome!
+        </Typography>
+        <TextField
+          label='Username'
+          value={username}
+          onChange={({ target }) => setUsername(target.value)}
+          data-testid='username'
+        ></TextField>
+        <TextField
+          label='Password'
+          type='password'
+          value={password}
+          onChange={({ target }) => setPassword(target.value)}
+          data-testid='password'
+        ></TextField>
+        <Button
+          variant='contained'
+          disableElevation
+          size='large'
+          onClick={handleLogin}
+        >
+          Login
+        </Button>
+        <Notification notification={notification}></Notification>
+      </Stack>
+    </Container>
   );
 
   const home = () => (
-    <div>
-      <div>
-        <Link to='/'>blogs</Link>
-        <Link to='/users'>users</Link>
-        logged in as {user.username}
-        <button onClick={() => dispatch(signOut())}>logout</button>
-      </div>
-      <h2>blog app</h2>
+    <Container maxWidth='md' sx={{ height: '100vh' }}>
+      <AppBar
+        color='transparent'
+        position='static'
+        sx={{ boxShadow: 0, py: 4 }}
+      >
+        <Stack direction='row' sx={{ justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex' }}>
+            <Typography variant='h5' component='h1'>
+              Blog app
+            </Typography>
+            <Box sx={{ px: 4 }}>
+              <Link to='/'>
+                <Button variant='text'>Blogs</Button>
+              </Link>
+              <Link to='/users'>
+                <Button>Users</Button>
+              </Link>
+            </Box>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Typography>Logged in as {user.username}</Typography>
+            <Box px={1} />
+            <Button variant='outlined' onClick={() => dispatch(signOut())}>
+              Logout
+            </Button>
+          </Box>
+        </Stack>
+      </AppBar>
       <Notification notification={notification}></Notification>
-      <div></div>
       <Outlet></Outlet>
-    </div>
+    </Container>
   );
 
-  return user === null ? loginForm() : home();
+  return <CssBaseline>{user === null ? loginForm() : home()}</CssBaseline>;
 };
 
 export default App;

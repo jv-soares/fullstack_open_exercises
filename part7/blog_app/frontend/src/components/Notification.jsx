@@ -1,9 +1,14 @@
+import { Alert, Box } from '@mui/material';
+
 const Notification = ({ notification }) => {
   if (notification === null) return null;
+
   return (
-    <div className={notification.isError ? 'error' : 'success'}>
-      {notification.message}
-    </div>
+    <Box mb={4}>
+      <Alert severity={notification.isError ? 'error' : 'success'}>
+        {notification.message}
+      </Alert>
+    </Box>
   );
 };
 

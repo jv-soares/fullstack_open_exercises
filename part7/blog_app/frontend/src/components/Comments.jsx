@@ -1,3 +1,4 @@
+import { Box, Button, Icon, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import blogService from '../services/blogs';
@@ -22,18 +23,27 @@ const Comments = () => {
   };
 
   return (
-    <div>
-      <h3>Comments</h3>
+    <Stack spacing={2}>
+      <Typography variant='h5' component='h3'>
+        Comments
+      </Typography>
       <form onSubmit={submitComment}>
-        <input
-          value={comment}
-          onChange={({ target }) => setComment(target.value)}
-        />
-        <button type='submit'>post comment</button>
+        <Box display='flex'>
+          <TextField
+            value={comment}
+            size='small'
+            onChange={({ target }) => setComment(target.value)}
+            sx={{ mr: 2 }}
+          ></TextField>
+          <Button type='submit' variant='outlined'>
+            <Icon sx={{ mr: 1 }}>send</Icon>
+            Post
+          </Button>
+        </Box>
       </form>
       {comments &&
         comments.map((comment) => <li key={comment.id}>{comment.content}</li>)}
-    </div>
+    </Stack>
   );
 };
 
