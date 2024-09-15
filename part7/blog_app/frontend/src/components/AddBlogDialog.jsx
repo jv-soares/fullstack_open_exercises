@@ -18,14 +18,25 @@ const AddBlogDialog = ({ isOpen, handleClose }) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const blog = Object.fromEntries(formData.entries());
-    const createdBlog = await dispatch(createBlog(blog));
-    handleClose();
 
-    const notification = {
-      message: `blog ${createdBlog.title} added by ${createdBlog.author}`,
-      isError: false,
-    };
-    dispatch(showNotification(notification));
+    let action;
+    try {
+      const createdBlog = await dispatch(createBlog(blog));
+      const notification = {
+        message: `blog ${createdBlog.title} added by ${createdBlog.author}`,
+        isError: false,
+      };
+      action = showNotification(notification);
+    } catch (error) {
+      const notification = {
+        message: error.response.data.error,
+        isError: true,
+      };
+      action = showNotification(notification);
+    } finally {
+      handleClose();
+      dispatch(action);
+    }
   };
 
   return (

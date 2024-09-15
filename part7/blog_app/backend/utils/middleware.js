@@ -31,7 +31,7 @@ const userExtractor = async (request, response, next) => {
       request.user = user;
     }
   } else {
-    response.status(401).end();
+    response.status(401).json({ error: 'unauthorized' });
   }
   next();
 };
