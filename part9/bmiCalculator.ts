@@ -48,8 +48,12 @@ const parseArguments = (args: string[]): BmiParams => {
 
 const isNumber = (value: any): boolean => !isNaN(Number(value));
 
-runCalculator(() => {
-  const params = parseArguments(process.argv);
-  const bmi = calculateBmi(params);
-  console.log(bmi);
-});
+if (require.main === module) {
+  runCalculator(() => {
+    const params = parseArguments(process.argv);
+    const bmi = calculateBmi(params);
+    console.log(bmi);
+  });
+}
+
+export default calculateBmi;
