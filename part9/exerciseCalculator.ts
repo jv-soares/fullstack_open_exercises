@@ -1,3 +1,10 @@
+import { runCalculator } from './utils';
+
+interface ExerciseParams {
+  dailyHours: number[];
+  target: number;
+}
+
 interface Result {
   periodLength: number;
   trainingDays: number;
@@ -8,18 +15,18 @@ interface Result {
   average: number;
 }
 
-const calculateExercises = (dailyHours: number[], target: number): Result => {
-  const average = getAverage(dailyHours);
-  const rating = getRating(average, target);
+const calculateExercises = (params: ExerciseParams): Result => {
+  const average = getAverage(params.dailyHours);
+  const rating = getRating(average, params.target);
   const ratingDescription = getRatingDescription(rating);
 
   return {
-    periodLength: dailyHours.length,
-    trainingDays: dailyHours.filter((e) => e > 0).length,
-    isSuccess: average > target,
+    periodLength: params.dailyHours.length,
+    trainingDays: params.dailyHours.filter((e) => e > 0).length,
+    isSuccess: average >= params.target,
     rating: rating,
     ratingDescription: ratingDescription,
-    target: target,
+    target: params.target,
     average: average,
   };
 };
@@ -43,4 +50,29 @@ const getRatingDescription = (rating: number): string => {
   }
 };
 
-console.log(calculateExercises([3, 0, 2, 4.5, 0, 3, 1], 2));
+const parseArguments = (args: string[]): ExerciseParams => {
+  const relevantArgs = args.slice(2);
+
+  const targetIndex = relevantArgs.findIndex((e) => e.includes('target='));
+  if (targetIndex === -1) throw Error('target must be provided');
+
+  const target = Number(relevantArgs[targetIndex].split('=')[1]);
+
+  if (isNaN(target)) throw Error('target must be number');
+  if (target <= 0) throw Error('target must be greater than 0');
+
+  relevantArgs.splice(targetIndex, 1);
+  const dailyHours = relevantArgs.map((e) => Number(e));
+
+  if (dailyHours.some((e) => isNaN(e))) {
+    throw Error('daily exercise hours must be numbers');
+  }
+
+  return { dailyHours, target };
+};
+
+runCalculator(() => {
+  const params = parseArguments(process.argv);
+  const result = calculateExercises(params);
+  console.log(result);
+});

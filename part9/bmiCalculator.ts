@@ -1,3 +1,5 @@
+import { runCalculator } from './utils';
+
 interface BmiParams {
   heightInCm: number;
   weightInKg: number;
@@ -46,14 +48,8 @@ const parseArguments = (args: string[]): BmiParams => {
 
 const isNumber = (value: any): boolean => !isNaN(Number(value));
 
-try {
+runCalculator(() => {
   const params = parseArguments(process.argv);
   const bmi = calculateBmi(params);
   console.log(bmi);
-} catch (error) {
-  let message = 'something went wrong';
-  if (error instanceof Error) {
-    message += `: ${error.message}`;
-  }
-  console.log(message);
-}
+});
