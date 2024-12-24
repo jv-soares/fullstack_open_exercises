@@ -71,8 +71,12 @@ const parseArguments = (args: string[]): ExerciseParams => {
   return { dailyHours, target };
 };
 
-runCalculator(() => {
-  const params = parseArguments(process.argv);
-  const result = calculateExercises(params);
-  console.log(result);
-});
+if (require.main === module) {
+  runCalculator(() => {
+    const params = parseArguments(process.argv);
+    const result = calculateExercises(params);
+    console.log(result);
+  });
+}
+
+export default calculateExercises;

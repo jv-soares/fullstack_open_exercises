@@ -46,7 +46,7 @@ const parseArguments = (args: string[]): BmiParams => {
   return params;
 };
 
-const isNumber = (value: any): boolean => !isNaN(Number(value));
+const isNumber = (value: unknown): boolean => !isNaN(Number(value));
 
 if (require.main === module) {
   runCalculator(() => {

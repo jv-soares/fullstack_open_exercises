@@ -1,4 +1,4 @@
-export const runCalculator = (callback: Function) => {
+export const runCalculator = (callback: () => void) => {
   try {
     callback();
   } catch (error) {
