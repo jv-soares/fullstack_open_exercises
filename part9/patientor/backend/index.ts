@@ -1,9 +1,9 @@
 import cors from 'cors';
-import express, { Response } from 'express';
+import express, { Request, Response } from 'express';
+import { errorHandler, newPatientValidator } from './src/middlewares';
 import diagnosisService from './src/services/diagnosisService';
 import patientService from './src/services/patientService';
-import { Diagnosis, NonSensitivePatient } from './src/types';
-import { toNewPatient } from './src/utils';
+import { Diagnosis, NewPatient, NonSensitivePatient } from './src/types';
 
 const app = express();
 const port = 3001;
@@ -25,19 +25,16 @@ app.get('/api/patients', (_req, res: Response<NonSensitivePatient[]>) => {
   res.json(patients);
 });
 
-app.post('/api/patients', (req, res) => {
-  try {
-    const newPatient = toNewPatient(req.body);
-    const addedPatient = patientService.addPatient(newPatient);
+app.post(
+  '/api/patients',
+  newPatientValidator,
+  (req: Request<unknown, unknown, NewPatient>, res: Response) => {
+    const addedPatient = patientService.addPatient(req.body);
     res.json(addedPatient);
-  } catch (error: unknown) {
-    let message = 'something went wrong';
-    if (error instanceof Error) {
-      message += `: ${error.message}`;
-    }
-    res.status(500).send({ error: message });
   }
-});
+);
+
+app.use(errorHandler);
 
 app.listen(port, () => {
   console.log(`Server runnning on port ${port}`);
