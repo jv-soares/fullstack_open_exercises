@@ -1,12 +1,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-
-interface DiaryEntry {
-  id: string;
-  date: string;
-  weather: string;
-  visibility: string;
-}
+import { DiaryEntry, NewDiaryEntry } from '../../core/types';
+import DiaryEntryForm from './components/DiaryEntryForm';
+import DiaryTable from './components/DiaryTable';
 
 const App = () => {
   const [diaries, setDiaries] = useState<DiaryEntry[]>([]);
@@ -17,27 +13,18 @@ const App = () => {
       .then((e) => setDiaries(e.data));
   }, []);
 
+  const addEntry = (newEntry: NewDiaryEntry) => {
+    axios.post('http://localhost:3000/api/diaries', newEntry).then((e) => {
+      const newDiaries = diaries.concat(e.data);
+      setDiaries(newDiaries);
+    });
+  };
+
   return (
     <div>
       <h1>Flight diaries</h1>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Weather</th>
-            <th>Visibility</th>
-          </tr>
-        </thead>
-        <tbody>
-          {diaries.map((e) => (
-            <tr key={e.id}>
-              <td>{e.date}</td>
-              <td>{e.weather}</td>
-              <td>{e.visibility}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <DiaryEntryForm onSubmitted={addEntry} />
+      <DiaryTable diaries={diaries} />
     </div>
   );
 };
