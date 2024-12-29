@@ -1,5 +1,4 @@
-
-import { NewDiaryEntry, Weather, Visibility } from './types';
+import { NewDiaryEntry, Weather, Visibility } from '../../core/types';
 
 const isString = (text: unknown): text is string => {
   return typeof text === 'string' || text instanceof String;
@@ -51,12 +50,12 @@ const toNewDiaryEntry = (object: unknown): NewDiaryEntry => {
     throw new Error('Incorrect or missing data');
   }
 
-  if ('comment' in object && 'date' in object && 'weather' in object && 'visibility' in object)  {
+  if ('date' in object && 'weather' in object && 'visibility' in object)  {
     const newEntry: NewDiaryEntry = {
       weather: parseWeather(object.weather),
       visibility: parseVisibility(object.visibility),
       date: parseDate(object.date),
-      comment: parseComment(object.comment)
+      comment: 'comment' in object ? parseComment(object.comment) : undefined,
     };
   
     return newEntry;
