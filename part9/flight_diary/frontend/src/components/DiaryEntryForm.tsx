@@ -10,6 +10,7 @@ const DiaryEntryForm = ({
   const [date, setDate] = useState('');
   const [weather, setWeather] = useState('');
   const [visibility, setVisibility] = useState('');
+  const [comment, setComment] = useState('');
 
   const enumToString = (type: { [s: string]: string }) =>
     Object.values(type).map((e) => e.toString());
@@ -20,7 +21,10 @@ const DiaryEntryForm = ({
       date: date,
       visibility: visibility as Visibility,
       weather: weather as Weather,
+      comment: comment ? comment : undefined,
     };
+    console.log(newEntry);
+
     onSubmitted(newEntry);
   };
 
@@ -47,6 +51,14 @@ const DiaryEntryForm = ({
           values={enumToString(Visibility)}
           onChange={setVisibility}
         />
+        <div>
+          <label>Comment: </label>
+          <input
+            type="text"
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+          ></input>
+        </div>
         <input type="submit" value="Add entry"></input>
       </form>
     </div>
