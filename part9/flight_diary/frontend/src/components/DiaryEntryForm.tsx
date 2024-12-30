@@ -34,6 +34,7 @@ const DiaryEntryForm = ({
             type="date"
             value={date}
             onChange={(event) => setDate(event.target.value)}
+            required
           ></input>
         </div>
         <RadioGroup

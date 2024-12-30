@@ -15,6 +15,7 @@ const RadioGroup = ({ label, values, onChange }: RadioGroupProps) => {
             name={label}
             value={e}
             onChange={(event) => onChange(event.target.value)}
+            required
           ></input>
           <label>{e}</label>
         </span>
