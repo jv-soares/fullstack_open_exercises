@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
+import { Button, Container, Divider, Typography } from '@mui/material';
 import axios from 'axios';
-import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom';
-import { Button, Divider, Container, Typography } from '@mui/material';
+import { useEffect, useState } from 'react';
+import { Link, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 
 import { apiBaseUrl } from './constants';
 import { Patient } from './types';
 
-import patientService from './services/patients';
-import PatientListPage from './components/PatientListPage';
 import PatientDetailsPage from './components/PatientDetailsPage';
+import PatientListPage from './components/PatientListPage';
+import patientService from './services/patients';
 
 const App = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -44,10 +44,7 @@ const App = () => {
                 />
               }
             />
-            <Route
-              path="/patients/:id"
-              element={<PatientDetailsPage patients={patients} />}
-            />
+            <Route path="/patients/:id" element={<PatientDetailsPage />} />
           </Routes>
         </Container>
       </Router>
