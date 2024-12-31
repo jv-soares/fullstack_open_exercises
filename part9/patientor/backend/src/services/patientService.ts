@@ -13,16 +13,10 @@ const getAll = (): NonSensitivePatient[] => {
   }));
 };
 
-const findById = (id: string): NonSensitivePatient | undefined => {
+const findById = (id: string): Patient | undefined => {
   const patient = data.find((e) => e.id === id);
   if (!patient) return;
-  return {
-    id: patient.id,
-    name: patient.name,
-    dateOfBirth: patient.dateOfBirth,
-    gender: patient.gender,
-    occupation: patient.occupation,
-  };
+  return patient;
 };
 
 const addPatient = (patient: NewPatient): Patient => {
