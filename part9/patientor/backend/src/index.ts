@@ -1,9 +1,9 @@
 import cors from 'cors';
 import express, { Request, Response } from 'express';
-import { errorHandler, newPatientValidator } from './src/middlewares';
-import diagnosisService from './src/services/diagnosisService';
-import patientService from './src/services/patientService';
-import { Diagnosis, NewPatient, NonSensitivePatient } from './src/types';
+import { errorHandler, newPatientValidator } from './middlewares';
+import diagnosisService from './services/diagnosisService';
+import patientService from './services/patientService';
+import { Diagnosis, NewPatient, NonSensitivePatient } from './types';
 
 const app = express();
 const port = 3001;
