@@ -34,6 +34,22 @@ app.post(
   }
 );
 
+app.get('/api/patients/:id', (req, res) => {
+  const id = req.params.id;
+  if (!id) {
+    res.status(400).send({ error: 'missing id' });
+    return;
+  }
+
+  const patient = patientService.findById(id);
+  if (!patient) {
+    res.status(404).send({ error: 'patient not found' });
+    return;
+  }
+
+  res.json(patient);
+});
+
 app.use(errorHandler);
 
 app.listen(port, () => {
