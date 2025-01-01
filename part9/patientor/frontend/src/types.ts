@@ -40,6 +40,8 @@ export interface HealthCheck extends BaseEntry {
 
 export type Entry = OccupationalHealthcareEntry | HospitalEntry | HealthCheck;
 
+export type DiagnosisCodes = Array<Diagnosis['code']>;
+
 export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;
 
 export enum HealthCheckRating {

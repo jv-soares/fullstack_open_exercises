@@ -1,17 +1,9 @@
-import {
-  Diagnosis,
-  Entry,
-  HealthCheck,
-  HospitalEntry,
-  OccupationalHealthcareEntry,
-} from '../../types';
+import { Entry } from '../../types';
+import HealthCheckEntryDetails from './HealthCheckEntryDetails';
+import HospitalEntryDetails from './HospitalEntryDetails';
+import OccupationalHealthcareEntryDetails from './OccupationalHealthcareEntryDetails';
 
-interface PatientEntriesProps {
-  entries: Entry[];
-  diagnoses: Diagnosis[];
-}
-
-const PatientEntries = ({ entries, diagnoses }: PatientEntriesProps) => {
+const PatientEntries = ({ entries }: { entries: Entry[] }) => {
   return (
     <div>
       <h3>Entries</h3>
@@ -22,127 +14,16 @@ const PatientEntries = ({ entries, diagnoses }: PatientEntriesProps) => {
               <OccupationalHealthcareEntryDetails
                 key={entry.id}
                 entry={entry}
-                diagnoses={diagnoses}
               />
             );
           case 'Hospital':
-            return (
-              <HospitalEntryDetails
-                key={entry.id}
-                entry={entry}
-                diagnoses={diagnoses}
-              />
-            );
+            return <HospitalEntryDetails key={entry.id} entry={entry} />;
           case 'HealthCheck':
-            return (
-              <HealthCheckEntryDetails
-                key={entry.id}
-                entry={entry}
-                diagnoses={diagnoses}
-              />
-            );
+            return <HealthCheckEntryDetails key={entry.id} entry={entry} />;
           default:
             return assertNever(entry);
         }
       })}
-    </div>
-  );
-};
-
-const OccupationalHealthcareEntryDetails = ({
-  entry,
-  diagnoses,
-}: {
-  entry: OccupationalHealthcareEntry;
-  diagnoses: Diagnosis[];
-}) => {
-  return (
-    <div key={entry.id}>
-      <p>
-        {entry.date}: {entry.description}
-      </p>
-      <p>Employer name: {entry.employerName}</p>
-      <p>Diagnose by {entry.specialist}</p>
-      {entry.sickLeave && (
-        <p>
-          Sick leave: from {entry.sickLeave.startDate} to{' '}
-          {entry.sickLeave.endDate}
-        </p>
-      )}
-      {entry.diagnosisCodes && (
-        <ul>
-          {entry.diagnosisCodes
-            .map((code) => diagnoses.find((e) => e.code === code))
-            .filter((diagnosis) => diagnosis !== undefined)
-            .map((diagnosis) => (
-              <li key={diagnosis.code}>
-                {diagnosis.code}: {diagnosis.name}
-              </li>
-            ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-const HospitalEntryDetails = ({
-  entry,
-  diagnoses,
-}: {
-  entry: HospitalEntry;
-  diagnoses: Diagnosis[];
-}) => {
-  return (
-    <div key={entry.id}>
-      <p>
-        {entry.date}: {entry.description}
-      </p>
-      <p>
-        Discharge: on {entry.discharge.date} criteria {entry.discharge.criteria}
-      </p>
-      <p>Diagnose by {entry.specialist}</p>
-      {entry.diagnosisCodes && (
-        <ul>
-          {entry.diagnosisCodes
-            .map((code) => diagnoses.find((e) => e.code === code))
-            .filter((diagnosis) => diagnosis !== undefined)
-            .map((diagnosis) => (
-              <li key={diagnosis.code}>
-                {diagnosis.code}: {diagnosis.name}
-              </li>
-            ))}
-        </ul>
-      )}
-    </div>
-  );
-};
-
-const HealthCheckEntryDetails = ({
-  entry,
-  diagnoses,
-}: {
-  entry: HealthCheck;
-  diagnoses: Diagnosis[];
-}) => {
-  return (
-    <div key={entry.id}>
-      <p>
-        {entry.date}: {entry.description}
-      </p>
-      <p>Health check rating: {entry.healthCheckRating}</p>
-      <p>Diagnose by {entry.specialist}</p>
-      {entry.diagnosisCodes && (
-        <ul>
-          {entry.diagnosisCodes
-            .map((code) => diagnoses.find((e) => e.code === code))
-            .filter((diagnosis) => diagnosis !== undefined)
-            .map((diagnosis) => (
-              <li key={diagnosis.code}>
-                {diagnosis.code}: {diagnosis.name}
-              </li>
-            ))}
-        </ul>
-      )}
     </div>
   );
 };
