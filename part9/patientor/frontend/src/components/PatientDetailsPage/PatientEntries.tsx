@@ -1,36 +1,17 @@
+import { Stack } from '@mui/material';
 import { Entry } from '../../types';
-import HealthCheckEntryDetails from './HealthCheckEntryDetails';
-import HospitalEntryDetails from './HospitalEntryDetails';
-import OccupationalHealthcareEntryDetails from './OccupationalHealthcareEntryDetails';
+import EntryDetailsCard from './EntryDetailsCard';
 
 const PatientEntries = ({ entries }: { entries: Entry[] }) => {
   return (
     <div>
       <h3>Entries</h3>
-      {entries.map((entry) => {
-        switch (entry.type) {
-          case 'OccupationalHealthcare':
-            return (
-              <OccupationalHealthcareEntryDetails
-                key={entry.id}
-                entry={entry}
-              />
-            );
-          case 'Hospital':
-            return <HospitalEntryDetails key={entry.id} entry={entry} />;
-          case 'HealthCheck':
-            return <HealthCheckEntryDetails key={entry.id} entry={entry} />;
-          default:
-            return assertNever(entry);
-        }
-      })}
+      <Stack spacing={1}>
+        {entries.map((entry) => (
+          <EntryDetailsCard key={entry.id} entry={entry} />
+        ))}
+      </Stack>
     </div>
-  );
-};
-
-const assertNever = (value: never): never => {
-  throw new Error(
-    `Unhandled discriminated union member: ${JSON.stringify(value)}`
   );
 };
 

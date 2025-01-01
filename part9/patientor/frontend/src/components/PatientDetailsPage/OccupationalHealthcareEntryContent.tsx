@@ -1,16 +1,15 @@
 import { OccupationalHealthcareEntry } from '../../types';
 import DiagnosesList from './DiagnosesList';
 
-const OccupationalHealthcareEntryDetails = ({
+const OccupationalHealthcareEntryContent = ({
   entry,
 }: {
   entry: OccupationalHealthcareEntry;
 }) => {
   return (
-    <div>
-      <p>
-        {entry.date}: {entry.description}
-      </p>
+    <>
+      <p>{entry.description}</p>
+      {entry.diagnosisCodes && <DiagnosesList codes={entry.diagnosisCodes} />}
       <p>Employer name: {entry.employerName}</p>
       <p>Diagnose by {entry.specialist}</p>
       {entry.sickLeave && (
@@ -19,9 +18,8 @@ const OccupationalHealthcareEntryDetails = ({
           {entry.sickLeave.endDate}
         </p>
       )}
-      {entry.diagnosisCodes && <DiagnosesList codes={entry.diagnosisCodes} />}
-    </div>
+    </>
   );
 };
 
-export default OccupationalHealthcareEntryDetails;
+export default OccupationalHealthcareEntryContent;
