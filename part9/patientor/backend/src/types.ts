@@ -1,5 +1,5 @@
 import z from 'zod';
-import { NewPatientSchema } from './utils';
+import { NewEntrySchema, NewPatientSchema } from './utils';
 
 export interface Diagnosis {
   code: string;
@@ -42,6 +42,8 @@ interface HealthCheck extends BaseEntry {
 }
 
 export type Entry = OccupationalHealthcareEntry | HospitalEntry | HealthCheck;
+
+export type NewEntry = z.infer<typeof NewEntrySchema>;
 
 export type NonSensitivePatient = Omit<Patient, 'ssn' | 'entries'>;
 

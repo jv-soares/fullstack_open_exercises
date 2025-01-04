@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import z from 'zod';
-import { NewPatientSchema } from './utils';
+import { NewEntrySchema, NewPatientSchema } from './utils';
 
 export const newPatientValidator = (
   req: Request,
@@ -9,6 +9,19 @@ export const newPatientValidator = (
 ) => {
   try {
     NewPatientSchema.parse(req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+export const newEntryValidator = (
+  req: Request,
+  _res: Response,
+  next: NextFunction
+) => {
+  try {
+    NewEntrySchema.parse(req.body);
     next();
   } catch (error: unknown) {
     next(error);
