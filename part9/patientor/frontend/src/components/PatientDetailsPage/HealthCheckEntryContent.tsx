@@ -1,4 +1,5 @@
-import { HealthCheck } from '../../types';
+import { Favorite } from '@mui/icons-material';
+import { HealthCheck, HealthCheckRating } from '../../types';
 import DiagnosesList from './DiagnosesList';
 
 const HealthCheckEntryContent = ({ entry }: { entry: HealthCheck }) => {
@@ -6,10 +7,29 @@ const HealthCheckEntryContent = ({ entry }: { entry: HealthCheck }) => {
     <>
       <p>{entry.description}</p>
       {entry.diagnosisCodes && <DiagnosesList codes={entry.diagnosisCodes} />}
-      <p>Health check rating: {entry.healthCheckRating}</p>
+      <p>
+        Rating: {<HealthCheckRatingIcon rating={entry.healthCheckRating} />}
+      </p>
       <p>Diagnose by {entry.specialist}</p>
     </>
   );
+};
+
+const HealthCheckRatingIcon = ({
+  rating,
+}: {
+  rating: HealthCheck['healthCheckRating'];
+}) => {
+  switch (rating) {
+    case HealthCheckRating.Healthy:
+      return <Favorite style={{ color: 'green' }} />;
+    case HealthCheckRating.LowRisk:
+      return <Favorite style={{ color: 'yellow' }} />;
+    case HealthCheckRating.HighRisk:
+      return <Favorite style={{ color: 'orange' }} />;
+    case HealthCheckRating.CriticalRisk:
+      return <Favorite style={{ color: 'red' }} />;
+  }
 };
 
 export default HealthCheckEntryContent;
