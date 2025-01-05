@@ -1,9 +1,7 @@
 import { Add } from '@mui/icons-material';
 import { Button, Stack } from '@mui/material';
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
-import patientService from '../../services/patients';
-import { Entry, EntryFormValues } from '../../types';
+import { Entry } from '../../types';
 import AddEntryForm from './AddEntryForm';
 import EntryDetailsCard from './EntryDetailsCard';
 
@@ -13,19 +11,7 @@ interface PatientEntriesProps {
 }
 
 const PatientEntries = ({ entries, onEntryAdded }: PatientEntriesProps) => {
-  const patientId = useParams().id!;
-
   const [isAddingEntry, setIsAddingEntry] = useState(false);
-
-  const saveEntry = async (entry: EntryFormValues) => {
-    try {
-      const addedEntry = await patientService.addEntry(patientId, entry);
-      onEntryAdded(addedEntry);
-      setIsAddingEntry(false);
-    } catch (error: unknown) {
-      console.log(error);
-    }
-  };
 
   return (
     <div>
@@ -41,7 +27,7 @@ const PatientEntries = ({ entries, onEntryAdded }: PatientEntriesProps) => {
       </Stack>
       {isAddingEntry && (
         <AddEntryForm
-          onSubmit={saveEntry}
+          onAdded={onEntryAdded}
           onCancel={() => setIsAddingEntry(false)}
         />
       )}
