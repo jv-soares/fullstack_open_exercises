@@ -1,8 +1,8 @@
 import { Favorite } from '@mui/icons-material';
-import { HealthCheck, HealthCheckRating } from '../../types';
+import { HealthCheckEntry, HealthCheckRating } from '../../types';
 import DiagnosesList from './DiagnosesList';
 
-const HealthCheckEntryContent = ({ entry }: { entry: HealthCheck }) => {
+const HealthCheckEntryContent = ({ entry }: { entry: HealthCheckEntry }) => {
   return (
     <>
       <p>{entry.description}</p>
@@ -18,7 +18,7 @@ const HealthCheckEntryContent = ({ entry }: { entry: HealthCheck }) => {
 const HealthCheckRatingIcon = ({
   rating,
 }: {
-  rating: HealthCheck['healthCheckRating'];
+  rating: HealthCheckEntry['healthCheckRating'];
 }) => {
   switch (rating) {
     case HealthCheckRating.Healthy:
