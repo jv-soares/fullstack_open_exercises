@@ -1,9 +1,13 @@
-import { Alert, Box, Button, Stack, Typography } from '@mui/material';
+import { Alert, Box, Typography } from '@mui/material';
 import { AxiosError } from 'axios';
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import patientService from '../../services/patients';
 import { Entry, EntryFormValues } from '../../types';
+import EntryTypeDropdownField from './EntryTypeDropdownField';
+import HealthCheckEntryFormFields from './HealthCheckEntryFormFields';
+import HospitalEntryFormFields from './HospitalEntryFormFields';
+import OccupationalHealthcareEntryFormFields from './OccupationalHealthcareEntryFormFields';
 
 interface AddEntryFormProps {
   onAdded: (values: Entry) => void;
@@ -13,23 +17,15 @@ interface AddEntryFormProps {
 const AddEntryForm = ({ onAdded, onCancel }: AddEntryFormProps) => {
   const patientId = useParams().id!;
 
-  const [date, setDate] = useState('');
-  const [description, setDescription] = useState('');
-  const [specialist, setSpecialist] = useState('');
-  const [rating, setRating] = useState('');
-
+  const [entryType, setEntryType] = useState<string>('');
   const [errorMessage, setErrorMessage] = useState<string>();
 
-  const submitForm = async (event: React.SyntheticEvent) => {
-    event.preventDefault();
+  const submitForm = async (entry: EntryFormValues) => {
+    if (!entryType) {
+      setErrorMessage('Please select an entry type');
+    }
+
     try {
-      const entry: EntryFormValues = {
-        type: 'HealthCheck',
-        date: date,
-        description: description,
-        specialist: specialist,
-        healthCheckRating: parseInt(rating),
-      };
       const addedEntry = await patientService.addEntry(patientId, entry);
       onAdded(addedEntry);
       onCancel();
@@ -45,62 +41,32 @@ const AddEntryForm = ({ onAdded, onCancel }: AddEntryFormProps) => {
     }
   };
 
+  const buildFormFields = () => {
+    switch (entryType) {
+      case 'OccupationalHealthcare':
+        return <OccupationalHealthcareEntryFormFields />;
+      case 'Hospital':
+        return <HospitalEntryFormFields />;
+      case 'HealthCheck':
+        return (
+          <HealthCheckEntryFormFields
+            onSubmit={submitForm}
+            onCancel={onCancel}
+          />
+        );
+    }
+  };
+
   return (
     <Box border={1} padding={2} marginBottom={2}>
-      <form onSubmit={submitForm}>
-        <Typography sx={{ fontWeight: 'bold', mb: 1 }}>NEW ENTRY</Typography>
-        <Stack spacing={1} marginBottom={2}>
-          <div>
-            <label>Date: </label>
-            <input
-              type="date"
-              value={date}
-              onChange={(event) => setDate(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Description: </label>
-            <input
-              type="text"
-              value={description}
-              onChange={(event) => setDescription(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Specialist: </label>
-            <input
-              type="text"
-              value={specialist}
-              onChange={(event) => setSpecialist(event.target.value)}
-              required
-            />
-          </div>
-          <div>
-            <label>Rating: </label>
-            <input
-              type="text"
-              value={rating}
-              onChange={(event) => setRating(event.target.value)}
-              required
-            />
-          </div>
-        </Stack>
-        {errorMessage && (
-          <Alert severity="error" sx={{ mb: 2 }}>
-            {errorMessage}
-          </Alert>
-        )}
-        <Stack direction="row" spacing={1}>
-          <Button variant="contained" color="error" onClick={onCancel}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="contained" color="primary">
-            Save
-          </Button>
-        </Stack>
-      </form>
+      <Typography sx={{ fontWeight: 'bold', mb: 1 }}>NEW ENTRY</Typography>
+      <EntryTypeDropdownField value={entryType} onSelect={setEntryType} />
+      {buildFormFields()}
+      {errorMessage && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {errorMessage}
+        </Alert>
+      )}
     </Box>
   );
 };
