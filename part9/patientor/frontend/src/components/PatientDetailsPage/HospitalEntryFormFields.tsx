@@ -1,15 +1,22 @@
-import { Stack, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { useState } from 'react';
-import { Discharge, EntryFormFieldsProps } from '../../types';
-import ActionButtons from './ActionButtons';
+import {
+  BaseEntryFormValues,
+  Discharge,
+  EntryFormFieldsProps,
+} from '../../types';
+import EntryFormScaffold from './EntryFormScaffold';
 
 const HospitalEntryFormFields = ({
   onSubmit,
   onCancel,
 }: EntryFormFieldsProps) => {
-  const [date, setDate] = useState('');
-  const [description, setDescription] = useState('');
-  const [specialist, setSpecialist] = useState('');
+  const [baseEntry, setBaseEntry] = useState<BaseEntryFormValues>({
+    date: '',
+    description: '',
+    specialist: '',
+    diagnosisCodes: [],
+  });
   const [discharge, setDischarge] = useState<Discharge>({
     date: '',
     criteria: '',
@@ -19,60 +26,24 @@ const HospitalEntryFormFields = ({
     event.preventDefault();
     onSubmit({
       type: 'Hospital',
-      date: date,
-      description: description,
-      specialist: specialist,
-      diagnosisCodes: [],
+      ...{
+        ...baseEntry,
+        diagnosisCodes:
+          baseEntry.diagnosisCodes!.length > 0
+            ? baseEntry.diagnosisCodes
+            : undefined,
+      },
       discharge: discharge,
     });
   };
 
   return (
-    <form onSubmit={submitForm}>
-      <Stack spacing={1} mb={2}>
-        <div>
-          <label>Date: </label>
-          <input
-            type="date"
-            value={date}
-            onChange={(event) => setDate(event.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Description: </label>
-          <input
-            type="text"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Specialist: </label>
-          <input
-            type="text"
-            value={specialist}
-            onChange={(event) => setSpecialist(event.target.value)}
-            required
-          />
-        </div>
-        <DischargeFormFields discharge={discharge} onChange={setDischarge} />
-      </Stack>
-      <ActionButtons onCancel={onCancel} />
-    </form>
-  );
-};
-
-const DischargeFormFields = ({
-  discharge,
-  onChange,
-}: {
-  discharge: Discharge;
-  onChange: (value: Discharge) => void;
-}) => {
-  return (
-    <div>
+    <EntryFormScaffold
+      value={baseEntry}
+      onChange={setBaseEntry}
+      onSubmit={submitForm}
+      onCancel={onCancel}
+    >
       <Typography variant="body1"> Discharge</Typography>
       <div>
         <label>Date: </label>
@@ -80,7 +51,7 @@ const DischargeFormFields = ({
           type="date"
           value={discharge.date}
           onChange={(event) =>
-            onChange({ ...discharge, date: event.target.value })
+            setDischarge({ ...discharge, date: event.target.value })
           }
           required
         />
@@ -91,12 +62,12 @@ const DischargeFormFields = ({
           type="text"
           value={discharge.criteria}
           onChange={(event) =>
-            onChange({ ...discharge, criteria: event.target.value })
+            setDischarge({ ...discharge, criteria: event.target.value })
           }
           required
         />
       </div>
-    </div>
+    </EntryFormScaffold>
   );
 };
 

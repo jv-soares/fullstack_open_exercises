@@ -53,6 +53,8 @@ export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;
 
 export type EntryFormValues = UnionOmit<Entry, 'id'>;
 
+export type BaseEntryFormValues = Omit<BaseEntry, 'id' | 'type'>;
+
 export enum HealthCheckRating {
   Healthy = 0,
   LowRisk = 1,
