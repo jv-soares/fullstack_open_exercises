@@ -35,7 +35,10 @@ const OccupationalHealthcareEntryFormFields = ({
             : undefined,
       },
       employerName: employerName,
-      sickLeave: sickLeave,
+      sickLeave:
+        sickLeave?.startDate !== '' || sickLeave?.endDate !== ''
+          ? sickLeave
+          : undefined,
     });
   };
 
@@ -70,7 +73,7 @@ const SickLeaveFormFields = ({
 }) => {
   return (
     <div>
-      <Typography variant="body1">Sick leave</Typography>
+      <Typography variant="body1">Sick leave (optional)</Typography>
       <div>
         <label>Start: </label>
         <input
