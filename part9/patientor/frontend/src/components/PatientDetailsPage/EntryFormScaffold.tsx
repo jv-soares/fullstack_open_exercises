@@ -1,4 +1,4 @@
-import { Stack } from '@mui/material';
+import { Divider, Stack } from '@mui/material';
 import { BaseEntryFormValues } from '../../types';
 import ActionButtons from './ActionButtons';
 import DiagnosisCodesFormField from './DiagnosisCodesFormFields';
@@ -14,7 +14,7 @@ interface EntryFormScaffoldProps {
 const EntryFormScaffold = (props: EntryFormScaffoldProps) => {
   return (
     <form onSubmit={props.onSubmit}>
-      <Stack spacing={1} mb={2}>
+      <Stack spacing={2} mb={2}>
         <div>
           <label>Date: </label>
           <input
@@ -51,12 +51,14 @@ const EntryFormScaffold = (props: EntryFormScaffoldProps) => {
             required
           />
         </div>
+        <Divider />
         <DiagnosisCodesFormField
           codes={props.value.diagnosisCodes!}
           onChange={(codes) =>
             props.onChange({ ...props.value, diagnosisCodes: codes })
           }
         />
+        <Divider />
         {props.children}
       </Stack>
       <ActionButtons onCancel={props.onCancel} />

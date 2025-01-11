@@ -1,4 +1,4 @@
-import { Typography } from '@mui/material';
+import { Divider, Typography } from '@mui/material';
 import { useState } from 'react';
 import {
   BaseEntryFormValues,
@@ -55,6 +55,7 @@ const OccupationalHealthcareEntryFormFields = ({
           required
         />
       </div>
+      <Divider />
       <SickLeaveFormFields sickLeave={sickLeave} onChange={setSickLeave} />
     </EntryFormScaffold>
   );
