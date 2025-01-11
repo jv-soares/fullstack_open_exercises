@@ -1,15 +1,12 @@
 import { Stack } from '@mui/material';
 import React, { useState } from 'react';
-import { EntryFormValues } from '../../types';
+import { EntryFormFieldsProps } from '../../types';
 import ActionButtons from './ActionButtons';
 
 const HealthCheckEntryFormFields = ({
   onSubmit,
   onCancel,
-}: {
-  onSubmit: (entry: EntryFormValues) => void;
-  onCancel: () => void;
-}) => {
+}: EntryFormFieldsProps) => {
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [specialist, setSpecialist] = useState('');

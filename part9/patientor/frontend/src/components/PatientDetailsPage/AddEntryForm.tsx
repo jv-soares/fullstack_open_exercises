@@ -46,7 +46,9 @@ const AddEntryForm = ({ onAdded, onCancel }: AddEntryFormProps) => {
       case 'OccupationalHealthcare':
         return <OccupationalHealthcareEntryFormFields />;
       case 'Hospital':
-        return <HospitalEntryFormFields />;
+        return (
+          <HospitalEntryFormFields onSubmit={submitForm} onCancel={onCancel} />
+        );
       case 'HealthCheck':
         return (
           <HealthCheckEntryFormFields

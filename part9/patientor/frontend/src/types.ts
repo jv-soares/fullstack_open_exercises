@@ -65,3 +65,8 @@ export enum Gender {
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown
   ? Omit<T, K>
   : never;
+
+export interface EntryFormFieldsProps {
+  onSubmit: (entry: EntryFormValues) => void;
+  onCancel: () => void;
+}
