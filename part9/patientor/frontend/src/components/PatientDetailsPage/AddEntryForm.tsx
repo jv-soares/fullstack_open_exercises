@@ -65,7 +65,7 @@ const AddEntryForm = ({ onAdded, onCancel }: AddEntryFormProps) => {
       <EntryTypeDropdownField value={entryType} onSelect={setEntryType} />
       {buildFormFields()}
       {errorMessage && (
-        <Alert severity="error" sx={{ mb: 2 }}>
+        <Alert severity="error" sx={{ mt: 2 }}>
           {errorMessage}
         </Alert>
       )}
