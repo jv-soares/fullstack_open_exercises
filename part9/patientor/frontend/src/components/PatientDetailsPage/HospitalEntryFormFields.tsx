@@ -69,7 +69,7 @@ const DischargeFormFields = ({
   onChange,
 }: {
   discharge: Discharge;
-  onChange: (discharge: Discharge) => void;
+  onChange: (value: Discharge) => void;
 }) => {
   return (
     <div>

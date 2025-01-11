@@ -44,7 +44,12 @@ const AddEntryForm = ({ onAdded, onCancel }: AddEntryFormProps) => {
   const buildFormFields = () => {
     switch (entryType) {
       case 'OccupationalHealthcare':
-        return <OccupationalHealthcareEntryFormFields />;
+        return (
+          <OccupationalHealthcareEntryFormFields
+            onSubmit={submitForm}
+            onCancel={onCancel}
+          />
+        );
       case 'Hospital':
         return (
           <HospitalEntryFormFields onSubmit={submitForm} onCancel={onCancel} />
