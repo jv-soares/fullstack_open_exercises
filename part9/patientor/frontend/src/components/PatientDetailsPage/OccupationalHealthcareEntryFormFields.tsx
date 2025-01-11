@@ -1,7 +1,8 @@
 import { Stack, Typography } from '@mui/material';
 import { useState } from 'react';
-import { EntryFormFieldsProps, OccupationalHealthcareEntry } from '../../types';
+import { DiagnosisCodes, EntryFormFieldsProps, SickLeave } from '../../types';
 import ActionButtons from './ActionButtons';
+import DiagnosisCodesFormField from './DiagnosisCodesFormFields';
 
 const OccupationalHealthcareEntryFormFields = ({
   onSubmit,
@@ -10,6 +11,7 @@ const OccupationalHealthcareEntryFormFields = ({
   const [date, setDate] = useState('');
   const [description, setDescription] = useState('');
   const [specialist, setSpecialist] = useState('');
+  const [diagnosisCodes, setDiagnosisCodes] = useState<DiagnosisCodes>([]);
   const [employerName, setEmployerName] = useState('');
   const [sickLeave, setSickLeave] = useState<SickLeave>({
     startDate: '',
@@ -23,12 +25,16 @@ const OccupationalHealthcareEntryFormFields = ({
       date: date,
       description: description,
       specialist: specialist,
-      diagnosisCodes: [],
+      diagnosisCodes: diagnosisCodes.length > 0 ? diagnosisCodes : undefined,
       employerName: employerName,
       sickLeave: sickLeave,
     });
   };
 
+  return <FormScaffold></FormScaffold>;
+};
+
+const FormScaffold = () => {
   return (
     <form onSubmit={submitForm}>
       <Stack spacing={1} mb={2}>
@@ -59,6 +65,10 @@ const OccupationalHealthcareEntryFormFields = ({
             required
           />
         </div>
+        <DiagnosisCodesFormField
+          codes={diagnosisCodes}
+          onChange={setDiagnosisCodes}
+        />
         <div>
           <label>Employer name: </label>
           <input
@@ -114,7 +124,5 @@ const SickLeaveFormFields = ({
     </div>
   );
 };
-
-type SickLeave = OccupationalHealthcareEntry['sickLeave'];
 
 export default OccupationalHealthcareEntryFormFields;

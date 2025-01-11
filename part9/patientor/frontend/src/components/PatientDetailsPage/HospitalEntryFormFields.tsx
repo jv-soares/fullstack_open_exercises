@@ -1,6 +1,6 @@
 import { Stack, Typography } from '@mui/material';
 import { useState } from 'react';
-import { EntryFormFieldsProps, HospitalEntry } from '../../types';
+import { Discharge, EntryFormFieldsProps } from '../../types';
 import ActionButtons from './ActionButtons';
 
 const HospitalEntryFormFields = ({
@@ -99,7 +99,5 @@ const DischargeFormFields = ({
     </div>
   );
 };
-
-type Discharge = HospitalEntry['discharge'];
 
 export default HospitalEntryFormFields;

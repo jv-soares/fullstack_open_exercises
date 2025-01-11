@@ -45,6 +45,10 @@ export type Entry =
 
 export type DiagnosisCodes = Array<Diagnosis['code']>;
 
+export type SickLeave = OccupationalHealthcareEntry['sickLeave'];
+
+export type Discharge = HospitalEntry['discharge'];
+
 export type PatientFormValues = Omit<Patient, 'id' | 'entries'>;
 
 export type EntryFormValues = UnionOmit<Entry, 'id'>;
