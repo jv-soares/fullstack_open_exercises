@@ -1,3 +1,5 @@
+import { Favorite } from '@mui/icons-material';
+import { Box, Rating, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { BaseEntryFormValues, EntryFormFieldsProps } from '../../types';
 import EntryFormScaffold from './EntryFormScaffold';
@@ -12,7 +14,8 @@ const HealthCheckEntryFormFields = ({
     specialist: '',
     diagnosisCodes: [],
   });
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(-1);
 
   const submitForm = (event: React.SyntheticEvent) => {
     event.preventDefault();
@@ -25,8 +28,27 @@ const HealthCheckEntryFormFields = ({
             ? baseEntry.diagnosisCodes
             : undefined,
       },
-      healthCheckRating: parseInt(rating),
+      healthCheckRating: getHealthCheckRating(),
     });
+  };
+
+  const getHealthCheckRating = (): number => {
+    return {
+      1: 3,
+      2: 2,
+      3: 1,
+      4: 0,
+    }[rating]!;
+  };
+
+  const getLabelText = (): string => {
+    const value = hoverRating !== -1 ? hoverRating : rating;
+    return {
+      1: 'Critical risk',
+      2: 'High risk',
+      3: 'Low risk',
+      4: 'Healthy',
+    }[value]!;
   };
 
   return (
@@ -36,15 +58,20 @@ const HealthCheckEntryFormFields = ({
       onSubmit={submitForm}
       onCancel={onCancel}
     >
-      <div>
-        <label>Rating: </label>
-        <input
-          type="text"
+      <Typography>Rating</Typography>
+      <Box display="flex" alignItems="center">
+        <Rating
           value={rating}
-          onChange={(event) => setRating(event.target.value)}
-          required
+          onChange={(_, newValue) => {
+            setRating(newValue!);
+          }}
+          onChangeActive={(_, newHoverValue) => setHoverRating(newHoverValue)}
+          icon={<Favorite />}
+          emptyIcon={<Favorite />}
+          max={4}
         />
-      </div>
+        {<Box sx={{ ml: 2 }}>{getLabelText()}</Box>}
+      </Box>
     </EntryFormScaffold>
   );
 };
