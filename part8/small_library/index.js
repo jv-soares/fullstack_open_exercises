@@ -109,7 +109,7 @@ const typeDefs = `
   type Book {
     id: ID!
     title: String!
-    published: Boolean!
+    published: Int!
     author: String!
     genres: [String!]!
   }
