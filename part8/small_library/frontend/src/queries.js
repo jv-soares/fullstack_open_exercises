@@ -4,9 +4,20 @@ export const ALL_AUTHORS = gql`
   query AllAuthors {
     allAuthors {
       id
-      bookCount
-      born
       name
+      born
+      bookCount
+    }
+  }
+`;
+
+export const ALL_BOOKS = gql`
+  query AllBooks {
+    allBooks {
+      id
+      title
+      author
+      published
     }
   }
 `;
