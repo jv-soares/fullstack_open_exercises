@@ -83,16 +83,12 @@ const resolvers = {
       await newBook.populate('author');
       return newBook;
     },
-    editAuthor: (parent, args) => {
-      const author = authors.find((author) => author.name === args.name);
-      if (!author) return;
-
-      const updatedAuthor = { ...author, born: args.setBornTo };
-      authors = authors.map((author) =>
-        author.id === updatedAuthor.id ? updatedAuthor : author
-      );
-      return updatedAuthor;
-    },
+    editAuthor: async (parent, args) =>
+      Author.findOneAndUpdate(
+        { name: args.name },
+        { born: args.setBornTo },
+        { new: true }
+      ),
   },
   Author: {
     bookCount: async (parent) => Book.countDocuments({ author: parent.id }),
