@@ -1,9 +1,9 @@
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
-const uuid = require('uuid');
 const mongoose = require('mongoose');
 const Author = require('./models/Author');
 const Book = require('./models/Book');
+const { GraphQLError } = require('graphql');
 
 require('dotenv').config();
 
@@ -75,20 +75,46 @@ const resolvers = {
     addBook: async (parent, args) => {
       let author = await Author.findOne({ name: args.author });
       if (!author) {
-        author = await Author({ name: args.author }).save();
+        try {
+          author = await Author({ name: args.author }).save();
+        } catch (error) {
+          throw new GraphQLError('error while creating author', {
+            extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.author,
+              error,
+            },
+          });
+        }
       }
 
-      const newBook = Book({ ...args, author: author._id });
-      await newBook.save();
-      await newBook.populate('author');
-      return newBook;
+      try {
+        const newBook = Book({ ...args, author: author._id });
+        await newBook.save();
+        await newBook.populate('author');
+        return newBook;
+      } catch (error) {
+        throw new GraphQLError('error while adding book', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            error,
+          },
+        });
+      }
     },
-    editAuthor: async (parent, args) =>
-      Author.findOneAndUpdate(
+    editAuthor: async (parent, args) => {
+      const updatedAuthor = await Author.findOneAndUpdate(
         { name: args.name },
         { born: args.setBornTo },
         { new: true }
-      ),
+      );
+      if (!updatedAuthor) {
+        throw new GraphQLError('author not found', {
+          extensions: { code: 'BAD_USER_INPUT', invalidArgs: args.name },
+        });
+      }
+      return updatedAuthor;
+    },
   },
   Author: {
     bookCount: async (parent) => Book.countDocuments({ author: parent.id }),
