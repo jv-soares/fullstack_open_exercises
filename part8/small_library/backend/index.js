@@ -49,6 +49,7 @@ const typeDefs = `
     authorCount: Int
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    me: User
   }
 
   type Mutation {
@@ -92,9 +93,16 @@ const resolvers = {
       return Book.find(filter).populate('author');
     },
     allAuthors: async () => Author.find({}),
+    me: (parent, args, context) => context.currentUser,
   },
   Mutation: {
-    addBook: async (parent, args) => {
+    addBook: async (parent, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new GraphQLError('not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       let author = await Author.findOne({ name: args.author });
       if (!author) {
         try {
@@ -124,7 +132,13 @@ const resolvers = {
         });
       }
     },
-    editAuthor: async (parent, args) => {
+    editAuthor: async (parent, args, { currentUser }) => {
+      if (!currentUser) {
+        throw new GraphQLError('not authenticated', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
       const updatedAuthor = await Author.findOneAndUpdate(
         { name: args.name },
         { born: args.setBornTo },
@@ -174,6 +188,17 @@ const server = new ApolloServer({
 
 startStandaloneServer(server, {
   listen: { port: 4000 },
+  context: async ({ req }) => {
+    const auth = req ? req.headers.authorization : null;
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      const decodedToken = jwt.verify(
+        auth.substring(7),
+        process.env.JWT_SECRET
+      );
+      const currentUser = await User.findById(decodedToken.id);
+      return { currentUser };
+    }
+  },
 }).then(({ url }) => {
   console.log(`Server ready at ${url}`);
 });
