@@ -1,9 +1,13 @@
 const { ApolloServer } = require('@apollo/server');
+const { GraphQLError } = require('graphql');
 const { startStandaloneServer } = require('@apollo/server/standalone');
-const mongoose = require('mongoose');
+
 const Author = require('./models/Author');
 const Book = require('./models/Book');
-const { GraphQLError } = require('graphql');
+const User = require('./models/user');
+
+const mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
 
 require('dotenv').config();
 
@@ -29,6 +33,16 @@ const typeDefs = `
     genres: [String!]!
   }
 
+  type User {
+    id: ID!
+    username: String!
+    favoriteGenre: String!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     dummy: Int
     bookCount: Int
@@ -45,6 +59,14 @@ const typeDefs = `
       genres: [String!]!
     ): Book
     editAuthor(name: String!, setBornTo: Int!): Author
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 `;
 
@@ -114,6 +136,30 @@ const resolvers = {
         });
       }
       return updatedAuthor;
+    },
+    createUser: async (parent, args) => {
+      const password = 'hardcoded';
+      const user = await User({ ...args, password }).save();
+      return {
+        id: user._id,
+        username: user.username,
+        favoriteGenre: user.favoriteGenre,
+      };
+    },
+    login: async (parent, args) => {
+      const { username, password } = args;
+      const user = await User.findOne({ username, password });
+      if (!user) {
+        throw new GraphQLError('invalid username or password', {
+          extensions: { code: 'UNAUTHENTICATED' },
+        });
+      }
+
+      const token = jwt.sign(
+        { id: user._id, username: user.username },
+        process.env.JWT_SECRET
+      );
+      return { value: token };
     },
   },
   Author: {
