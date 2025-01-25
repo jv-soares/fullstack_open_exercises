@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Authors from './components/Authors';
 import Books from './components/Books';
 import LoginForm from './components/LoginForm';
@@ -11,6 +11,11 @@ const App = () => {
   const [userToken, setUserToken] = useState(null);
 
   const client = useApolloClient();
+
+  useEffect(() => {
+    const savedUserToken = localStorage.getItem('user-token');
+    setUserToken(savedUserToken);
+  }, []);
 
   const onLogin = (userToken) => {
     setUserToken(userToken);
