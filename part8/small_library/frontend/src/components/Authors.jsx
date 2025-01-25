@@ -7,7 +7,7 @@ const Authors = (props) => {
   const result = useQuery(ALL_AUTHORS);
   const [editAuthor] = useMutation(EDIT_AUTHOR);
 
-  const [authorToEdit, setAuthorToEdit] = useState();
+  const [authorToEdit, setAuthorToEdit] = useState(null);
 
   if (!props.show) {
     return null;
@@ -19,7 +19,7 @@ const Authors = (props) => {
 
   const submitEditedAuthor = (editedAuthor) => {
     editAuthor({ variables: editedAuthor });
-    setAuthorToEdit();
+    setAuthorToEdit(null);
   };
 
   const authors = result.data.allAuthors;
@@ -39,6 +39,7 @@ const Authors = (props) => {
               key={author.id}
               author={author}
               isEditing={authorToEdit?.id === author.id}
+              canEdit={props.canEdit}
               onEditClick={() => setAuthorToEdit(author)}
               onSubmit={submitEditedAuthor}
               onCancel={setAuthorToEdit}
@@ -53,6 +54,7 @@ const Authors = (props) => {
 const AuthorDetails = ({
   author,
   isEditing,
+  canEdit,
   onEditClick,
   onSubmit,
   onCancel,
@@ -94,7 +96,7 @@ const AuthorDetails = ({
             <button onClick={onCancel}>cancel</button>
           </div>
         ) : (
-          <button onClick={onEditClick}>edit</button>
+          canEdit && <button onClick={onEditClick}>edit</button>
         )}
       </td>
     </tr>
