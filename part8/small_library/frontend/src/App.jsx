@@ -17,12 +17,13 @@ const App = () => {
     setUserToken(savedUserToken);
   }, []);
 
-  const onLogin = (userToken) => {
-    setUserToken(userToken);
+  const login = (userToken) => {
     setPage('authors');
+    setUserToken(userToken);
   };
 
   const logout = () => {
+    setPage('authors');
     setUserToken(null);
     localStorage.clear();
     client.resetStore();
@@ -51,7 +52,7 @@ const App = () => {
 
       <Recommendations show={page === 'recommendations'} />
 
-      <LoginForm show={page === 'login'} onLogin={onLogin}></LoginForm>
+      <LoginForm show={page === 'login'} onLogin={login}></LoginForm>
     </div>
   );
 };

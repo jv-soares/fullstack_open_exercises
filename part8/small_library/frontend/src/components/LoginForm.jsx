@@ -1,16 +1,20 @@
-import { useMutation } from '@apollo/client';
+import { useApolloClient, useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { LOGIN } from '../mutations';
+import { FAVORITE_GENRE } from '../queries';
 
 const LoginForm = (props) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+
+  const client = useApolloClient();
 
   const [login, result] = useMutation(LOGIN, {
     onCompleted: (data) => {
       const token = data.login.value;
       props.onLogin(token);
       localStorage.setItem('user-token', token);
+      client.refetchQueries({ include: [FAVORITE_GENRE] });
       setUsername('');
       setPassword('');
     },
