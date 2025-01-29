@@ -1,32 +1,25 @@
 import { useQuery } from '@apollo/client';
 import { useState } from 'react';
-import { ALL_BOOKS } from '../queries';
+import { ALL_BOOKS, ALL_GENRES } from '../queries';
 
 const Books = (props) => {
-  const [allGenres, setAllGenres] = useState([]);
   const [selectedGenre, setSelectedGenre] = useState(null);
 
-  const result = useQuery(ALL_BOOKS, {
-    onCompleted: (data) => {
-      const genres = new Set();
-      for (const book of data.allBooks) {
-        for (const genre of book.genres) {
-          genres.add(genre);
-        }
-      }
-      setAllGenres([...genres]);
-    },
+  const allGenresResult = useQuery(ALL_GENRES);
+
+  const allBooksResult = useQuery(ALL_BOOKS, {
+    variables: { genre: selectedGenre },
   });
 
   if (!props.show) {
     return null;
   }
 
-  if (result.loading) {
+  if (allBooksResult.loading || allGenresResult.loading) {
     return <p>loading...</p>;
   }
 
-  const books = result.data.allBooks;
+  const books = allBooksResult.data.allBooks;
 
   const byGenre = (book) => {
     if (selectedGenre) {
@@ -40,7 +33,7 @@ const Books = (props) => {
     <div>
       <h2>books</h2>
       <GenreFilter
-        allGenres={allGenres}
+        allGenres={allGenresResult.data.allGenres}
         selectedGenre={selectedGenre}
         onChange={setSelectedGenre}
       />
