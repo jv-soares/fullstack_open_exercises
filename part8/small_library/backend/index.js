@@ -1,8 +1,7 @@
 const { ApolloServer } = require('@apollo/server');
-const { GraphQLError } = require('graphql');
 const { startStandaloneServer } = require('@apollo/server/standalone');
 
-const User = require('./models/user');
+const User = require('./models/User');
 
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');

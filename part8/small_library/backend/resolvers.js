@@ -1,5 +1,10 @@
 const Author = require('./models/Author');
 const Book = require('./models/Book');
+const User = require('./models/User');
+
+const { GraphQLError } = require('graphql');
+
+const jwt = require('jsonwebtoken');
 
 const resolvers = {
   Query: {
