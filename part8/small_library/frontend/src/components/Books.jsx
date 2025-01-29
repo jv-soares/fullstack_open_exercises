@@ -4,7 +4,7 @@ import { ALL_BOOKS } from '../queries';
 
 const Books = (props) => {
   const [allGenres, setAllGenres] = useState([]);
-  const [selectedGenres, setSelectedGenres] = useState([]);
+  const [selectedGenre, setSelectedGenre] = useState(null);
 
   const result = useQuery(ALL_BOOKS, {
     onCompleted: (data) => {
@@ -29,10 +29,10 @@ const Books = (props) => {
   const books = result.data.allBooks;
 
   const byGenre = (book) => {
-    if (selectedGenres.length === 0) {
-      return book;
+    if (selectedGenre) {
+      return book.genres.some((genre) => genre === selectedGenre);
     } else {
-      return book.genres.some((genre) => selectedGenres.includes(genre));
+      return book;
     }
   };
 
@@ -41,8 +41,8 @@ const Books = (props) => {
       <h2>books</h2>
       <GenreFilter
         allGenres={allGenres}
-        selectedGenres={selectedGenres}
-        onChange={(genres) => setSelectedGenres(genres)}
+        selectedGenre={selectedGenre}
+        onChange={setSelectedGenre}
       />
       <table>
         <tbody>
@@ -64,48 +64,28 @@ const Books = (props) => {
   );
 };
 
-const GenreFilter = ({ allGenres, selectedGenres, onChange }) => {
-  const changeFilter = (event) => {
-    let newGenres = [];
-    const genre = event.target.value;
-    if (event.target.checked) {
-      newGenres = [...selectedGenres, genre];
-    } else {
-      newGenres = selectedGenres.filter(
-        (selectedGenre) => selectedGenre !== genre
-      );
-    }
-    onChange(newGenres);
-  };
-
-  const selectOrDeselectAll = () => {
-    if (selectedGenres.length === allGenres.length) {
-      onChange([]);
-    } else {
-      onChange(allGenres);
-    }
-  };
-
+const GenreFilter = ({ allGenres, selectedGenre, onChange }) => {
   return (
     <div>
       {allGenres.map((genre) => (
         <span key={genre} style={{ marginRight: 10 }}>
           <input
-            type="checkbox"
+            type="radio"
             value={genre}
-            checked={selectedGenres.includes(genre)}
-            onChange={changeFilter}
+            checked={selectedGenre === genre}
+            onChange={(event) => onChange(event.target.value)}
+            radioGroup="genre"
           />
           <label>{genre}</label>
         </span>
       ))}
       <div>
         <input
-          type="checkbox"
-          checked={selectedGenres.length === allGenres.length}
-          onChange={selectOrDeselectAll}
+          type="radio"
+          checked={!selectedGenre}
+          onChange={() => onChange(null)}
         />
-        <label>select/deselect all</label>
+        <label>all genres</label>
       </div>
     </div>
   );
