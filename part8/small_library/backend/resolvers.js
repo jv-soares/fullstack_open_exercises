@@ -7,6 +7,15 @@ const jwt = require('jsonwebtoken');
 const { GraphQLError } = require('graphql');
 const { PubSub } = require('graphql-subscriptions');
 
+const DataLoader = require('dataloader');
+const authorBookCountLoader = new DataLoader(async (authorIds) => {
+  const books = await Book.find({ author: { $in: authorIds } });
+  const getBookCountByAuthorId = (authorId) => {
+    return books.filter((book) => book.author.equals(authorId)).length;
+  };
+  return authorIds.map(getBookCountByAuthorId);
+});
+
 const pubsub = new PubSub();
 
 const resolvers = {
@@ -131,7 +140,7 @@ const resolvers = {
     },
   },
   Author: {
-    bookCount: async (parent) => Book.countDocuments({ author: parent.id }),
+    bookCount: async (parent) => authorBookCountLoader.load(parent.id),
   },
 };
 
