@@ -5,6 +5,7 @@ import Books from './components/Books';
 import LoginForm from './components/LoginForm';
 import NewBook from './components/NewBook';
 import Recommendations from './components/Recommendations';
+import { ALL_BOOKS } from './queries';
 import { BOOK_ADDED } from './subscriptions';
 
 const App = () => {
@@ -19,13 +20,15 @@ const App = () => {
   }, []);
 
   useSubscription(BOOK_ADDED, {
-    onData: ({ data }) => {
+    onData: ({ data, client }) => {
       const addedBook = data.data.bookAdded;
       if (addedBook) {
         window.alert(
           `new book ${addedBook.title} added by ${addedBook.author.name}`
         );
       }
+
+      client.refetchQueries({ include: [ALL_BOOKS] });
     },
   });
 
